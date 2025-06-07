@@ -29,12 +29,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import pe.cibertec.gestorgo.data.model.Item
 import pe.cibertec.gestorgo.ui.viewmodel.ElementosViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ElementosScreen(viewModel: ElementosViewModel = hiltViewModel()) {
     val items by viewModel.items.collectAsState()

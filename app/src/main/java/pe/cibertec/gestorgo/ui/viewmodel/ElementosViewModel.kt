@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ElementosViewModel @Inject constructor(
-    private val repository: ItemsRepository
+    private val itemsRepository: ItemsRepository
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)
@@ -25,7 +25,7 @@ class ElementosViewModel @Inject constructor(
 
     fun cargarItems() {
         viewModelScope.launch {
-            _items.value = repository.getItems()
+            _items.value = itemsRepository.getItems()
         }
     }
 }

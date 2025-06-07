@@ -1,13 +1,13 @@
 package pe.cibertec.gestorgo.data.repository
 
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.result.PostgrestResult
 import pe.cibertec.gestorgo.data.model.Item
-import pe.cibertec.gestorgo.di.SupabaseClient
+import javax.inject.Inject
 
-class ItemsRepository {
-    private val client = SupabaseClient.client
+class ItemsRepository @Inject constructor(private val client: SupabaseClient) {
 
     private val columns = Columns.raw(
         """ id, nombre, descripcion, cantidad,

@@ -3,8 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
-   id("com.google.devtools.ksp")
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.devtools.ksp)
+
 }
 
 android {
@@ -50,10 +51,13 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:storage-kt")
     implementation("io.ktor:ktor-client-okhttp:3.1.3")
 
-    implementation("com.github.tehras.charts:charts:0.3.4")
-    implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
+    implementation("com.github.tehras:charts:0.2.4-alpha")
 
-
+    // Hilt core
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    // Integración con Compose
+    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation("io.coil-kt.coil3:coil-compose:3.2.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
