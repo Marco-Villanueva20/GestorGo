@@ -5,6 +5,7 @@ plugins {
 
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.kotlinx.serialization)
 
 }
 
@@ -44,6 +45,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.threetenabp)
     implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.github.jan-tennert.supabase:auth-kt")
@@ -53,16 +55,17 @@ dependencies {
 
     implementation("com.github.tehras:charts:0.2.4-alpha")
 
+    implementation(libs.kotlinx.serialization.json)
     // Hilt core
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     // Integración con Compose
     implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation("io.coil-kt.coil3:coil-compose:3.2.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
