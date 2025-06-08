@@ -1,5 +1,6 @@
 package pe.cibertec.gestorgo.di
 
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,11 +11,15 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
+import pe.cibertec.gestorgo.features.usuario.data.UsuariosRepository
+import pe.cibertec.gestorgo.features.usuario.data.UsuariosRepositorySupabase
+import pe.cibertec.gestorgo.features.usuario.data.UsuariosService
+import pe.cibertec.gestorgo.features.usuario.data.UsuariosServiceSupabase
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class NetworkModulo {
+class SupabaseModule {
 
     @Provides
     @Singleton
@@ -23,13 +28,28 @@ class NetworkModulo {
             supabaseUrl = "https://jfkhkwtbnkgpwzddybus.supabase.co",
             supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impma2hrd3RibmtncHd6ZGR5YnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNzI5MzgsImV4cCI6MjA2NDg0ODkzOH0.kFrXROJmpxYThfv3O8e7ohSMZATT7Cml_eHv2KHbjpU"
         ){
-            install(Auth){
-                scheme = "softmaps"
-                host = "login-callback"
-            }
+            install(Auth)
             install(Postgrest)
             install(Realtime)
             install(Storage)
         }
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface UsuarioRepositoryModule {
+
+    @Binds
+    @Singleton
+    fun bindUsuariosRepository(
+        repo: UsuariosRepositorySupabase
+    ): UsuariosRepository
+
+    @Binds
+    @Singleton
+    fun bindUsuariosService(
+        service: UsuariosServiceSupabase
+    ): UsuariosService
+
 }

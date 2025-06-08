@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Gestor Go</string>
+
+    <string name="iniciar_sesion">Iniciar Sesión</string>
+    <string name="correo_electronico">Correo Electrónico</string>
+    <string name="contrasenha">Contraseña</string>
+    <string name="ingresar">Ingresar</string>
+    <string name="contactar">Contactar</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_crear_ruta">CrearRutaActivity</string>
+    <string name="item_name_req">Ingresa el nombre del lugar</string>
+    <string name="back_button">Boton de retroceder a la vista principal</string>
+    <string name="login_screen_title">Login</string>
+    <string name="main_screen_title">Home</string>
+    <string name="regitrarse">Registrarse</string>
+    <string name="crear_ruta_screen_title">Crea tu Ruta</string>
+    <string name="title_login">Iniciar Sesion</string>
+    <string name="nombre">Ingrese su nombre</string>
+    <string name="apellido">Ingrese su apellido</string>
+    <string name="registrarse">Registrate</string>
+    <string name="telefono">Ingrese su teléfono</string>
+    <string name="dni">Ingrese su DNI</string>
+    <string name="crear_cuenta">Crear cuenta</string>
 </resources>

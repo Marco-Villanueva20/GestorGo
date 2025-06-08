@@ -12,5 +12,5 @@ data class Usuario(
     val email: String,
     val dni: String,
     val rol: String = "CLIENTE", // Valor por defecto
-    val creado:String
+    val creado:String? = null
 )
