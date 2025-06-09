@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import pe.cibertec.gestorgo.core.ahoraEnPeruComoString
 import pe.cibertec.gestorgo.data.model.Usuario
 import pe.cibertec.gestorgo.features.usuario.data.UsuariosRepository
 import javax.inject.Inject
@@ -22,10 +21,6 @@ class RegistroViewModel @Inject constructor(private val repository: UsuariosRepo
     private val _errorMsg = MutableStateFlow<String?>(null)
     val errorMsg = _errorMsg.asStateFlow()
 
-    fun togglePasswordVisibility():Boolean{
-        _uiState.value = _uiState.value.copy(passwordVisible = !_uiState.value.passwordVisible)
-        return _uiState.value.passwordVisible
-    }
 
     fun register() {
         viewModelScope.launch {
@@ -46,6 +41,11 @@ class RegistroViewModel @Inject constructor(private val repository: UsuariosRepo
                 _isLoading.value = false
             }
         }
+    }
+
+    fun togglePasswordVisibility():Boolean{
+        _uiState.value = _uiState.value.copy(passwordVisible = !_uiState.value.passwordVisible)
+        return _uiState.value.passwordVisible
     }
 
     fun onEmailChange(email: String) {
