@@ -1,6 +1,5 @@
 package pe.cibertec.gestorgo.features.usuario.iniciosesion.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,12 +24,11 @@ class InicioSesionViewModel @Inject constructor(private val usuariosRepository: 
         _uiState.value = _uiState.value.copy(passwordVisible = !_uiState.value.passwordVisible)
         return _uiState.value.passwordVisible
     }
+
     fun iniciarSesion() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             try {
-                Log.d("LoginViewModel", "Iniciando sesión con email: ${_uiState.value.email}")
-                Log.d("LoginViewModel", "Iniciando sesión con contraseña: ${_uiState.value.contrasenha.text}")
                 usuariosRepository.login(_uiState.value.email, _uiState.value.contrasenha.text.toString())
                 _uiState.value = _uiState.value.copy(isLoading = false, loginSuccess = true)
             } catch (e: Exception) {

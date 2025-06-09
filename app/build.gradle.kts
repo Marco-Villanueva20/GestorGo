@@ -45,6 +45,8 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.threetenabp)
     implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
