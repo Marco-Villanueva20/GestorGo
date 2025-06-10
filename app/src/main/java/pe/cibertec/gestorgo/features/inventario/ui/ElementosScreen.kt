@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.ui.screen
+package pe.cibertec.gestorgo.features.inventario.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -31,8 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
-import pe.cibertec.gestorgo.data.model.Item
-import pe.cibertec.gestorgo.ui.viewmodel.ElementosViewModel
+import pe.cibertec.gestorgo.features.inventario.data.model.Item
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)

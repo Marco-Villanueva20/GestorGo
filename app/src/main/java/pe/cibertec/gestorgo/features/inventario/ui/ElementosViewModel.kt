@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.ui.viewmodel
+package pe.cibertec.gestorgo.features.inventario.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,8 +9,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import pe.cibertec.gestorgo.data.model.Item
-import pe.cibertec.gestorgo.data.repository.ItemsRepository
+import pe.cibertec.gestorgo.features.inventario.data.model.Item
+import pe.cibertec.gestorgo.features.inventario.data.repository.ItemsRepository
 import javax.inject.Inject
 
 @HiltViewModel

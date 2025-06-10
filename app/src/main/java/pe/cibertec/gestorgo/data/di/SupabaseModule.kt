@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.di
+package pe.cibertec.gestorgo.data.di
 
 import dagger.Binds
 import dagger.Module
@@ -11,10 +11,10 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
-import pe.cibertec.gestorgo.features.usuario.data.UsuariosRepository
-import pe.cibertec.gestorgo.features.usuario.data.UsuariosRepositorySupabase
-import pe.cibertec.gestorgo.features.usuario.data.UsuariosService
-import pe.cibertec.gestorgo.features.usuario.data.UsuariosServiceSupabase
+import pe.cibertec.gestorgo.features.usuario.data.repository.UsuariosRepository
+import pe.cibertec.gestorgo.features.usuario.data.repository.UsuariosRepositorySupabase
+import pe.cibertec.gestorgo.features.usuario.data.remote.UsuariosService
+import pe.cibertec.gestorgo.features.usuario.data.remote.UsuariosRemoteDataSource
 import javax.inject.Singleton
 
 @Module
@@ -49,7 +49,7 @@ interface UsuarioRepositoryModule {
     @Binds
     @Singleton
     fun bindUsuariosService(
-        service: UsuariosServiceSupabase
+        service: UsuariosRemoteDataSource
     ): UsuariosService
 
 }

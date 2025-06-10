@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.data.model
+package pe.cibertec.gestorgo.features.usuario.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

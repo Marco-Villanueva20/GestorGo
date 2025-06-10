@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.features.usuario.data
+package pe.cibertec.gestorgo.features.usuario.data.remote
 
 import android.util.Log
 import io.github.jan.supabase.SupabaseClient
@@ -11,23 +11,13 @@ import io.github.jan.supabase.realtime.selectAsFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import pe.cibertec.gestorgo.data.model.Usuario
+import pe.cibertec.gestorgo.features.usuario.data.model.Usuario
+import pe.cibertec.gestorgo.features.usuario.data.service.UsuariosService
 import javax.inject.Inject
 
-interface UsuariosService {
-    suspend fun obtenerUsuarios(): List<Usuario>
-    suspend fun login(email: String, password: String)
-    suspend fun logout()
-    suspend fun register(password: String, usuario: Usuario): UserInfo?
-    suspend fun obtenerUsuariosRealTime(): Flow<List<Usuario>>
 
-    suspend fun obtenerUsuario(id: String): Usuario
-    suspend fun crearUsuario(usuario: Usuario): Usuario
-    suspend fun actualizarUsuario(usuario: Usuario): Usuario
-    suspend fun eliminarUsuario(id: String): Usuario
-}
 
-class UsuariosServiceSupabase @Inject constructor(private val client: SupabaseClient):
+class UsuariosRemoteDataSource @Inject constructor(private val client: SupabaseClient):
     UsuariosService {
     override suspend fun obtenerUsuarios(): List<Usuario> {
         val usuarios: List<Usuario> = client

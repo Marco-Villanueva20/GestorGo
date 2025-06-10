@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.data.model
+package pe.cibertec.gestorgo.features.inventario.data.model
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName

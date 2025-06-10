@@ -1,10 +1,10 @@
-package pe.cibertec.gestorgo.data.repository
+package pe.cibertec.gestorgo.features.inventario.data.repository
 
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.result.PostgrestResult
-import pe.cibertec.gestorgo.data.model.Item
+import pe.cibertec.gestorgo.features.inventario.data.model.Item
 import javax.inject.Inject
 
 class ItemsRepository @Inject constructor(private val client: SupabaseClient) {

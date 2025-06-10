@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.data.model
+package pe.cibertec.gestorgo.features.inventario.data.model
 
 data class Item(
     val id: Int,

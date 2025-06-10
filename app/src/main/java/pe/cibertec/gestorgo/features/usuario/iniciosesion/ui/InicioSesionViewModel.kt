@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import pe.cibertec.gestorgo.features.usuario.data.UsuariosRepository
+import pe.cibertec.gestorgo.features.usuario.data.repository.UsuariosRepository
 import javax.inject.Inject
 
 @HiltViewModel
