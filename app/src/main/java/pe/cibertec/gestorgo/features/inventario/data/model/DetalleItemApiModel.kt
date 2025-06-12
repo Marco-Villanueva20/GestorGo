@@ -5,10 +5,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DetalleItem(
+data class DetalleItemApiModel(
     val id: Int,
     val cantidad : Int,
     val fecha: String,
     @SerialName("item_id") val itemId: Int,
-    @Contextual val item: Item? = null
+    @Contextual val itemApiModel: ItemApiModel? = null
 )

@@ -11,6 +11,14 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
+import pe.cibertec.gestorgo.features.inventario.data.remote.DetalleItemRemoteDataSource
+import pe.cibertec.gestorgo.features.inventario.data.remote.ItemRemoteDataSource
+import pe.cibertec.gestorgo.features.inventario.data.repository.DetalleItemsRepositoryImpl
+import pe.cibertec.gestorgo.features.inventario.data.repository.ItemsRepositoryImpl
+import pe.cibertec.gestorgo.features.inventario.domain.repository.DetalleItemsRepository
+import pe.cibertec.gestorgo.features.inventario.domain.repository.ItemsRepository
+import pe.cibertec.gestorgo.features.inventario.domain.service.DetalleItemService
+import pe.cibertec.gestorgo.features.inventario.domain.service.ItemService
 import pe.cibertec.gestorgo.features.usuario.data.remote.UsuariosRemoteDataSource
 import pe.cibertec.gestorgo.features.usuario.data.repository.UsuariosRepositoryImpl
 import pe.cibertec.gestorgo.features.usuario.domain.repository.UsuariosRepository
@@ -51,5 +59,36 @@ interface UsuarioRepositoryModule {
     fun bindUsuariosService(
         service: UsuariosRemoteDataSource
     ): UsuariosService
+}
 
+@Module
+@InstallIn(SingletonComponent::class)
+interface ItemRepositoryAndService{
+    @Binds
+    @Singleton
+    fun bindItemRepository(
+        repo: ItemsRepositoryImpl
+    ): ItemsRepository
+
+    @Binds
+    @Singleton
+    fun bindItemService(
+        service: ItemRemoteDataSource
+    ): ItemService
+
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface DetalleItemRepositoryAndService{
+    @Binds
+    @Singleton
+    fun bindDetalleItemRepository(
+        repo: DetalleItemsRepositoryImpl
+    ): DetalleItemsRepository
+    @Binds
+    @Singleton
+    fun bindDetalleItemService(
+        service: DetalleItemRemoteDataSource
+    ): DetalleItemService
 }
