@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.features.inventario.ui
+package pe.cibertec.gestorgo.features.inventario.ui.item
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,23 +9,26 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import pe.cibertec.gestorgo.features.inventario.data.model.Item
-import pe.cibertec.gestorgo.features.inventario.data.repository.ItemsRepository
+import pe.cibertec.gestorgo.features.inventario.data.repository.ItemsRepositoryImpl
 import javax.inject.Inject
 
 @HiltViewModel
-class ElementosViewModel @Inject constructor(
-    private val itemsRepository: ItemsRepository
+class ItemsViewModel @Inject constructor(
+    private val itemsRepositoryImpl: ItemsRepositoryImpl
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)
 
-    private val _items = MutableStateFlow<List<Item>>(emptyList())
-    val items = _items.asStateFlow()
+    private val _uiState = MutableStateFlow(ItemUIState())
+    val uiState = _uiState.asStateFlow()
+
 
     fun cargarItems() {
         viewModelScope.launch {
-            _items.value = itemsRepository.getItems()
+            isLoading = true
+            val items = itemsRepositoryImpl.listarItems() // Suponiendo que esto devuelve List<Item>
+            _uiState.value = ItemUIState(listaItems = items)
+            isLoading = false
         }
     }
 }

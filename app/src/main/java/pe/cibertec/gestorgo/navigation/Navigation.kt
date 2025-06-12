@@ -45,7 +45,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import pe.cibertec.gestorgo.R
-import pe.cibertec.gestorgo.features.inventario.ui.ToolListScreen
+import pe.cibertec.gestorgo.features.inventario.ui.listaelementos.ListScreen
 import pe.cibertec.gestorgo.features.usuario.ui.iniciosesion.InicioSesionScreen
 import pe.cibertec.gestorgo.features.usuario.ui.registro.RegistroScreen
 
@@ -165,7 +165,7 @@ fun NavigationScreen(
             }
             composable<Home> {
 
-                ToolListScreen() }
+                ListScreen() }
             composable<Inventory> { /* InventoryScreen() */ }
             composable<Report> { /* ReportScreen() */ }
             composable<Users> { /* UsersScreen() */ }

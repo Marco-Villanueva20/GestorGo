@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.features.inventario.ui
+package pe.cibertec.gestorgo.features.inventario.ui.item
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -28,16 +28,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
-import pe.cibertec.gestorgo.features.inventario.data.model.Item
+import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
+import pe.cibertec.gestorgo.ui.theme.GestorGoTheme
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ElementosScreen(viewModel: ElementosViewModel = hiltViewModel()) {
-    val items by viewModel.items.collectAsState()
+fun ItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
+    val items = viewModel.uiState.value.listaItems
 
     LaunchedEffect(Unit) {
         viewModel.cargarItems()
@@ -48,7 +50,7 @@ fun ElementosScreen(viewModel: ElementosViewModel = hiltViewModel()) {
             TopAppBar(title = { Text("Elementos") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* agregar item */ }) {
+            FloatingActionButton(onClick = { /* agregar itemApiModel */ }) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
             }
         }
@@ -62,7 +64,7 @@ fun ElementosScreen(viewModel: ElementosViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun ItemCard(item: Item) {
+fun ItemCard(itemApiModel: ItemApiModel) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -72,15 +74,23 @@ fun ItemCard(item: Item) {
     ) {
         Row(modifier = Modifier.padding(12.dp)) {
             Image(
-                painter = rememberAsyncImagePainter(item.imagenUrl),
-                contentDescription = item.nombre,
+                painter = rememberAsyncImagePainter(itemApiModel.imagenUrl),
+                contentDescription = itemApiModel.nombre,
                 modifier = Modifier.size(64.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                Text(text = item.nombre, style = MaterialTheme.typography.titleMedium)
-                Text(text = item.descripcion, style = MaterialTheme.typography.bodySmall)
+                Text(text = itemApiModel.nombre, style = MaterialTheme.typography.titleMedium)
+                Text(text = itemApiModel.descripcion, style = MaterialTheme.typography.bodySmall)
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun ElementosScreenPreview() {
+    GestorGoTheme {
+        ItemsScreen()
     }
 }
