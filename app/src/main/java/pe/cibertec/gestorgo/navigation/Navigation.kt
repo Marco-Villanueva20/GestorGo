@@ -46,8 +46,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import pe.cibertec.gestorgo.R
 import pe.cibertec.gestorgo.features.inventario.ui.ToolListScreen
-import pe.cibertec.gestorgo.features.usuario.iniciosesion.ui.InicioSesionScreen
-import pe.cibertec.gestorgo.features.usuario.registro.ui.RegistroScreen
+import pe.cibertec.gestorgo.features.usuario.ui.iniciosesion.InicioSesionScreen
+import pe.cibertec.gestorgo.features.usuario.ui.registro.RegistroScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)

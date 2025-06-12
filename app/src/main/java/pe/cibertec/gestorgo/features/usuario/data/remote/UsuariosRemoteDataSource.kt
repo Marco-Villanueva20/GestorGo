@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import pe.cibertec.gestorgo.features.usuario.data.model.Usuario
-import pe.cibertec.gestorgo.features.usuario.data.service.UsuariosService
+import pe.cibertec.gestorgo.features.usuario.domain.service.UsuariosService
 import javax.inject.Inject
 
 
@@ -40,7 +40,7 @@ class UsuariosRemoteDataSource @Inject constructor(private val client: SupabaseC
     }
 
     override suspend fun logout() {
-        TODO("Not yet implemented")
+        client.auth.signOut()
     }
 
     override suspend fun register(password: String, usuario: Usuario): UserInfo? {

@@ -3,7 +3,8 @@ package pe.cibertec.gestorgo.features.usuario.data.repository
 import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.Flow
 import pe.cibertec.gestorgo.features.usuario.data.model.Usuario
-import pe.cibertec.gestorgo.features.usuario.data.service.UsuariosService
+import pe.cibertec.gestorgo.features.usuario.domain.repository.UsuariosRepository
+import pe.cibertec.gestorgo.features.usuario.domain.service.UsuariosService
 import javax.inject.Inject
 
 class UsuariosRepositoryImpl @Inject constructor(private val usuariosService: UsuariosService):

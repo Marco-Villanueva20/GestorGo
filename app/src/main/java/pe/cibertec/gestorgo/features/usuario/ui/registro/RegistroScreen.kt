@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.features.usuario.registro.ui
+package pe.cibertec.gestorgo.features.usuario.ui.registro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

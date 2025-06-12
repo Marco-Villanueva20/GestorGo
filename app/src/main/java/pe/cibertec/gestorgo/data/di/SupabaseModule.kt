@@ -11,7 +11,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
-import pe.cibertec.gestorgo.features.usuario.data.repository.UsuariosRepository
+import pe.cibertec.gestorgo.features.usuario.domain.repository.UsuariosRepository
 import pe.cibertec.gestorgo.features.usuario.data.repository.UsuariosRepositorySupabase
 import pe.cibertec.gestorgo.features.usuario.data.remote.UsuariosService
 import pe.cibertec.gestorgo.features.usuario.data.remote.UsuariosRemoteDataSource

@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.features.usuario.registro.ui
+package pe.cibertec.gestorgo.features.usuario.ui.registro
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import pe.cibertec.gestorgo.features.usuario.data.model.Usuario
-import pe.cibertec.gestorgo.features.usuario.data.repository.UsuariosRepository
+import pe.cibertec.gestorgo.features.usuario.domain.repository.UsuariosRepository
 import javax.inject.Inject
 
 @HiltViewModel

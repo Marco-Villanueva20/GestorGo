@@ -1,4 +1,4 @@
-package pe.cibertec.gestorgo.features.usuario.iniciosesion.ui
+package pe.cibertec.gestorgo.features.usuario.ui.iniciosesion
 
 import androidx.compose.foundation.text.input.TextFieldState
 
