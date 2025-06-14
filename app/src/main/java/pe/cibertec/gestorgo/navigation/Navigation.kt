@@ -45,6 +45,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import pe.cibertec.gestorgo.R
+import pe.cibertec.gestorgo.features.inventario.ui.item.crearitem.CreateScreen
 import pe.cibertec.gestorgo.features.inventario.ui.listaelementos.ListScreen
 import pe.cibertec.gestorgo.features.usuario.ui.iniciosesion.InicioSesionScreen
 import pe.cibertec.gestorgo.features.usuario.ui.registro.RegistroScreen
@@ -59,7 +60,7 @@ fun NavigationScreen(
     val currentDestination = navBackStackEntry?.destination
 
     // Mostrar u ocultar barras
-    val showBottomBar = bottomLevelRoutes.any{route ->
+    val showBottomBar = bottomLevelRoutes.any { route ->
         currentDestination?.hierarchy?.any { it.hasRoute(route.route::class) } == true
     }
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -116,7 +117,8 @@ fun NavigationScreen(
             if (showBottomBar) {
                 NavigationBar {
                     bottomLevelRoutes.forEach { item ->
-                        val isSelected = currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true
+                        val isSelected =
+                            currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true
                         NavigationBarItem(
                             icon = { Icon(item.icon, contentDescription = item.name) },
                             label = { Text(item.name) },
@@ -151,10 +153,11 @@ fun NavigationScreen(
                 InicioSesionScreen(
                     onButtonRegister = { navController.navigate(Register) },
                     onButtonAccess = {
-                        navController.navigate(Home){
+                        navController.navigate(Home) {
                             popUpTo(Login) { inclusive = true }
                             launchSingleTop = true
-                        } }
+                        }
+                    }
                 )
             }
             composable<Register> {
@@ -164,19 +167,32 @@ fun NavigationScreen(
                 )
             }
             composable<Home> {
-
-                ListScreen() }
-            composable<Inventory> { /* InventoryScreen() */ }
-            composable<Report> { /* ReportScreen() */ }
-            composable<Users> { /* UsersScreen() */ }
+                ListScreen(
+                    onCreateClick = { navController.navigate(CreateItem) },
+                    onEditClick = {},
+                    onDeleteClick = {})
+            }
+            composable<CreateItem> {
+                CreateScreen(
+                    onBackPressed = {
+                        navController.popBackStack()
+                    },
+                    onSaved = {
+                        navController.popBackStack()
+                    },
+                    onCancelClick = {}
+                )
+                composable<Report> { /* ReportScreen() */ }
+                composable<Users> { /* UsersScreen() */ }
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewNavigationScreen() {
-    MaterialTheme {
-        NavigationScreen()
+    @Preview(showBackground = true)
+    @Composable
+    fun PreviewNavigationScreen() {
+        MaterialTheme {
+            NavigationScreen()
+        }
     }
-}

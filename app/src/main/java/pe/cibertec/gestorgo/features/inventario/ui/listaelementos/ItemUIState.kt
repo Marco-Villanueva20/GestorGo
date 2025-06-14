@@ -6,5 +6,5 @@ data class ItemUIState(
     val name: String = "",
     val description: String="",
     val iconResId: Int? = null,
-    val listaItems: List<ItemApiModel> = emptyList()
+    var listaItems: List<ItemApiModel> = emptyList()
 )

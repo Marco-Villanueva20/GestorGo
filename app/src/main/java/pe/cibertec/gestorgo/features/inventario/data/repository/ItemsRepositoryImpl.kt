@@ -1,6 +1,7 @@
 package pe.cibertec.gestorgo.features.inventario.data.repository
 
 import io.github.jan.supabase.postgrest.result.PostgrestResult
+import kotlinx.coroutines.flow.Flow
 import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
 import pe.cibertec.gestorgo.features.inventario.data.remote.ItemRemoteDataSource
 import pe.cibertec.gestorgo.features.inventario.domain.repository.ItemsRepository
@@ -9,7 +10,8 @@ import javax.inject.Inject
 class ItemsRepositoryImpl @Inject constructor(private val itemsRemoteDataSource: ItemRemoteDataSource) :
     ItemsRepository {
 
-    override suspend fun listarItems(): List<ItemApiModel> {
+
+    override suspend fun getItems(): Flow<List<ItemApiModel>> {
         return itemsRemoteDataSource.getItems()
     }
 
@@ -35,5 +37,9 @@ class ItemsRepositoryImpl @Inject constructor(private val itemsRemoteDataSource:
 
     override suspend fun obtenerItem(id: Int): ItemApiModel {
         return itemsRemoteDataSource.getItem(id)
+    }
+
+    override suspend fun createInBucketItem(name: String, data: ByteArray): String {
+        return itemsRemoteDataSource.createInBucketItem(name, data)
     }
 }

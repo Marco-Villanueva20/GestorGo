@@ -10,26 +10,26 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import pe.cibertec.gestorgo.features.inventario.data.repository.ItemsRepositoryImpl
-import pe.cibertec.gestorgo.features.inventario.ui.item.ItemUIState
 import javax.inject.Inject
 
 @HiltViewModel
 class ListItemViewModel @Inject constructor(private val itemsRepositoryImpl: ItemsRepositoryImpl ): ViewModel() {
-    var isLoading by mutableStateOf(false)
+    private var isLoading by mutableStateOf(false)
 
     private val _uiState = MutableStateFlow(ItemUIState())
     val uiState = _uiState.asStateFlow()
-init {
-    cargarItems()
-}
+    init {
+        cargarItems()
+    }
 
     private fun cargarItems() {
         viewModelScope.launch {
             isLoading = true
-            val items = itemsRepositoryImpl.listarItems() // Suponiendo que esto devuelve List<Item>
-            _uiState.value = ItemUIState(listaItems = items)
-            println("Hola bobo $items")
-            isLoading = false
+            itemsRepositoryImpl.getItems().collect { itemList ->
+                _uiState.value = _uiState.value.copy(listaItems = itemList)
+                println("Lista actualizada con ${itemList.size} items")
+            }
+            isLoading = false // aunque este no se alcanza si el flow nunca termina
         }
     }
 }
