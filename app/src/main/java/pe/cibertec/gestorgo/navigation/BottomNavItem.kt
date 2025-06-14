@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import kotlinx.serialization.Serializable
+import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
 
 
 // Data class para tus rutas de barra inferior
@@ -26,6 +27,9 @@ data class BottomLevelRoute<T : Any>(
 @Serializable data object Login
 @Serializable data object Register
 
+@Serializable data class EditItem(val itemApiModel: ItemApiModel)
+@Serializable data object CreateItem
+
 // Listas de rutas
 val bottomLevelRoutes = listOf(
     BottomLevelRoute("Lista", Home, Icons.Filled.Home),
@@ -34,8 +38,3 @@ val bottomLevelRoutes = listOf(
     BottomLevelRoute("Usuarios", Users, Icons.Filled.Person)
 )
 val authRoutes = listOf(Login, Register)
-
-// Extensión para detectar coincidencia de ruta
-fun NavDestination?.isInBottomBarRoutes(): Boolean {
-    return this?.route in bottomLevelRoutes.map { it.route.toString() }
-}

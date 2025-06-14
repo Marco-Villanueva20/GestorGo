@@ -7,3 +7,8 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.devtools.ksp) apply false
 }
+buildscript {
+    dependencies {
+        classpath(libs.secrets.gradle.plugin)
+    }
+}

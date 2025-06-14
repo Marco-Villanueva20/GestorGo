@@ -6,11 +6,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.jan.supabase.SupabaseClient
+
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
+import pe.cibertec.gestorgo.BuildConfig
 import pe.cibertec.gestorgo.features.inventario.data.remote.DetalleItemRemoteDataSource
 import pe.cibertec.gestorgo.features.inventario.data.remote.ItemRemoteDataSource
 import pe.cibertec.gestorgo.features.inventario.data.repository.DetalleItemsRepositoryImpl
@@ -31,11 +33,11 @@ class SupabaseModule {
 
     @Provides
     @Singleton
-    fun proveerSupabaseClient():  SupabaseClient {
+    fun proveerSupabaseClient(): SupabaseClient {
         return createSupabaseClient(
-            supabaseUrl = "https://jfkhkwtbnkgpwzddybus.supabase.co",
-            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impma2hrd3RibmtncHd6ZGR5YnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNzI5MzgsImV4cCI6MjA2NDg0ODkzOH0.kFrXROJmpxYThfv3O8e7ohSMZATT7Cml_eHv2KHbjpU"
-        ){
+            supabaseUrl = BuildConfig.SUPABASE_API_URL,
+            supabaseKey = BuildConfig.SUPABASE_API_KEY
+        ) {
             install(Auth)
             install(Postgrest)
             install(Realtime)
@@ -63,7 +65,7 @@ interface UsuarioRepositoryModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface ItemRepositoryAndService{
+interface ItemRepositoryAndService {
     @Binds
     @Singleton
     fun bindItemRepository(
@@ -80,12 +82,13 @@ interface ItemRepositoryAndService{
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface DetalleItemRepositoryAndService{
+interface DetalleItemRepositoryAndService {
     @Binds
     @Singleton
     fun bindDetalleItemRepository(
         repo: DetalleItemsRepositoryImpl
     ): DetalleItemsRepository
+
     @Binds
     @Singleton
     fun bindDetalleItemService(
