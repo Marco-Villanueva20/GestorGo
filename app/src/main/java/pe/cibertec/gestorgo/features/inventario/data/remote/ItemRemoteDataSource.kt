@@ -16,13 +16,32 @@ import javax.inject.Inject
 
 class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClient): ItemService {
     private val bucket = client.storage.from("items")
+
+
     private val columns = Columns.raw(
-        """ id, nombre, descripcion, cantidad,
-    detalles_items (
-    id, cantidad, fecha, item_id
+        """
+    id, 
+    nombre, 
+    descripcion, 
+    cantidad,
+    detalle_items (
+        id, 
+        cantidad, 
+        fecha, 
+        item_id
     )
-   """.trimIndent()
+    """.trimIndent()
     )
+
+
+    override suspend fun getItemsWithDetails(): List<ItemApiModel> {
+        val listaCompleta = client.from("items")
+            .select(columns = columns)
+            .decodeList<ItemApiModel>()
+
+        println("Lista completa: $listaCompleta")
+        return listaCompleta
+    }
 
     override suspend fun getItemWithDetails(id: Int): ItemApiModel {
         return client.from("items").select(columns = columns){
@@ -31,9 +50,7 @@ class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClien
             }
         }.decodeSingle<ItemApiModel>()
     }
-    override suspend fun getItemsWithDetails(): List<ItemApiModel> {
-        return client.from("items").select(columns = columns).decodeList<ItemApiModel>()
-    }
+
 
     @OptIn(SupabaseExperimental::class)
     override suspend fun getItems(): Flow<List<ItemApiModel>> {

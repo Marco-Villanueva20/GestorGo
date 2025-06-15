@@ -5,6 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@SerialName("detalle_items")
 data class DetalleItemApiModel(
     val id: Int,
     val cantidad : Int,
