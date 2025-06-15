@@ -8,4 +8,6 @@ interface DetalleItemService {
     suspend fun crearDetalleItem(detalleItemApiModel: DetalleItemApiModel): DetalleItemApiModel
     suspend fun actualizarDetalleItem(detalleItemApiModel: DetalleItemApiModel): PostgrestResult
     suspend fun eliminarDetalleItem(id: Int): DetalleItemApiModel
+
+    //suspend fun listarDetalleItemsConItem(): List<DetalleItemApiModel>
 }

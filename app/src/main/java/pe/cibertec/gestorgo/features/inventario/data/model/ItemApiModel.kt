@@ -5,6 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@SerialName("items")
 data class ItemApiModel(
     val id: Int? = null,
     var nombre: String,
@@ -12,5 +13,5 @@ data class ItemApiModel(
     @SerialName("imagen_url" ) var imagenUrl: String? = null,
     var cantidad: Int? = null,
     @SerialName("usuario_id") var usuarioId: String? = null,
-    @Contextual val detalleItemApiModels: List<DetalleItemApiModel>? = null
+    @Contextual @SerialName("detalle_items") val detalleItemApiModels: List<DetalleItemApiModel>? = null
 )

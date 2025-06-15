@@ -6,8 +6,6 @@ import androidx.compose.material.icons.filled.InsertChart
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import kotlinx.serialization.Serializable
 import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
 
@@ -21,7 +19,7 @@ data class BottomLevelRoute<T : Any>(
 
 // Rutas serializables
 @Serializable data object Home
-@Serializable data object Inventory
+@Serializable data object Historial
 @Serializable data object Report
 @Serializable data object Users
 @Serializable data object Login
@@ -33,7 +31,7 @@ data class BottomLevelRoute<T : Any>(
 // Listas de rutas
 val bottomLevelRoutes = listOf(
     BottomLevelRoute("Lista", Home, Icons.Filled.Home),
-    BottomLevelRoute("Producto", Inventory, Icons.Filled.Inventory),
+    BottomLevelRoute("Historial", Historial, Icons.Filled.Inventory),
     BottomLevelRoute("Reporte", Report, Icons.Filled.InsertChart),
     BottomLevelRoute("Usuarios", Users, Icons.Filled.Person)
 )
