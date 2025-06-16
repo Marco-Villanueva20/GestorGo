@@ -17,7 +17,7 @@ class HistorialItemViewModel @Inject constructor(private val repository: ItemsRe
     private val _uiState = MutableStateFlow(HistorialItemUIState())
     val uiState = _uiState.asStateFlow()
 
-    fun listarDetalleItems(){
+    private fun listarDetalleItems(){
         viewModelScope.launch {
             val items = repository.obtenerItemsConDetalles()
 
