@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.Packaging
 import java.util.Properties
 
 plugins {
@@ -26,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId = "pe.cibertec.gestorgo"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -59,6 +60,10 @@ android {
 dependencies {
 
     implementation(libs.androidx.navigation.compose)
+
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+
+
 
     implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
