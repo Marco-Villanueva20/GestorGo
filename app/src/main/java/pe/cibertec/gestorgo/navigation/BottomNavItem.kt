@@ -6,8 +6,11 @@ import androidx.compose.material.icons.filled.InsertChart
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavType
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
+import kotlinx.serialization.modules.SerializersModule
+import pe.cibertec.gestorgo.features.inventario.domain.model.Item
 
 
 // Data class para tus rutas de barra inferior
@@ -25,8 +28,14 @@ data class BottomLevelRoute<T : Any>(
 @Serializable data object Login
 @Serializable data object Register
 
-@Serializable data class EditItem(val itemApiModel: ItemApiModel)
+@Serializable data class EditItem(val id: Int? = null,
+                                  val nombre: String,
+                                  val descripcion: String,
+                                  val imagenUrl: String? = null,
+                                  val cantidad: Int? = null,
+                                  val usuarioId: String? = null)
 @Serializable data object CreateItem
+
 
 // Listas de rutas
 val bottomLevelRoutes = listOf(
@@ -35,4 +44,3 @@ val bottomLevelRoutes = listOf(
     BottomLevelRoute("Reporte", Report, Icons.Filled.InsertChart),
     BottomLevelRoute("Usuarios", Users, Icons.Filled.Person)
 )
-val authRoutes = listOf(Login, Register)

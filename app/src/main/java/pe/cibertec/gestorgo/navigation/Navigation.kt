@@ -44,10 +44,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import pe.cibertec.gestorgo.R
 import pe.cibertec.gestorgo.features.inventario.ui.historial.HistorialScreen
 import pe.cibertec.gestorgo.features.inventario.ui.item.crearitem.CreateScreen
-import pe.cibertec.gestorgo.features.inventario.ui.listaelementos.ListScreen
+import pe.cibertec.gestorgo.features.inventario.ui.item.editaritem.EditarScreen
+import pe.cibertec.gestorgo.features.inventario.ui.lista.ListScreen
 import pe.cibertec.gestorgo.features.inventario.ui.reporte.ReporteExportScreen
 import pe.cibertec.gestorgo.features.usuario.ui.iniciosesion.InicioSesionScreen
 import pe.cibertec.gestorgo.features.usuario.ui.registro.RegistroScreen
@@ -171,8 +173,38 @@ fun NavigationScreen(
             composable<Home> {
                 ListScreen(
                     onCreateClick = { navController.navigate(CreateItem) },
-                    onEditClick = {},
-                    onDeleteClick = {})
+                    // MODIFICADO: Pasar los parámetros individuales a EditItem
+                    onEditClick = { item ->
+                        navController.navigate(
+                            EditItem(
+                                id = item.id,
+                                nombre = item.nombre,
+                                descripcion = item.descripcion,
+                                imagenUrl = item.imagenUrl,
+                                cantidad = item.cantidad,
+                                usuarioId = item.usuarioId
+                            )
+                        )
+                    }
+                )
+            }
+            composable<EditItem> { backStackEntry ->
+                val route = backStackEntry.toRoute<EditItem>()
+                EditarScreen(
+                    itemId = route.id,
+                    nombre = route.nombre,
+                    descripcion = route.descripcion,
+                    imagenUrl = route.imagenUrl,
+                    cantidad = route.cantidad,
+                    usuarioId = route.usuarioId,
+                    onBackPressed = {
+                        navController.popBackStack()
+                    },
+                    onUpdate = {
+                        navController.popBackStack()
+                    },
+                    onCancel = {}
+                )
             }
             composable<CreateItem> {
                 CreateScreen(

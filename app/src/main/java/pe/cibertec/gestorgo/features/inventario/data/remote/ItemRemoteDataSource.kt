@@ -69,13 +69,13 @@ class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClien
 
     override suspend fun crearItem(itemApiModel: ItemApiModel): PostgrestResult {
         val idUsuario = client.auth.currentUserOrNull()
-        println( idUsuario)
         itemApiModel.usuarioId = idUsuario?.id
-        println(itemApiModel.usuarioId)
         return client.from("items").insert(itemApiModel)
     }
 
     override suspend fun actualizarItem(itemApiModel: ItemApiModel): PostgrestResult {
+        val idUsuario = client.auth.currentUserOrNull()
+        itemApiModel.usuarioId = idUsuario?.id
         return client.from("items").update(itemApiModel) {
             filter {
                 itemApiModel.id?.let { eq("id", it) }
