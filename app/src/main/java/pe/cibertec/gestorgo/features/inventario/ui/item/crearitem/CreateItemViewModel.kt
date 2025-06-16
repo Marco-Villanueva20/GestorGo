@@ -110,4 +110,6 @@ class CreateItemViewModel
 
     private fun Uri.toByteArray(context: Context) =
         context.contentResolver.openInputStream(this)?.use { it.buffered().readBytes() }
+
+
 }
