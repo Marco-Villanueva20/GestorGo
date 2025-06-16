@@ -96,9 +96,6 @@ class ReporteViewModel @Inject constructor(private val reporteRepository: ItemsR
                 }
             }
 
-            // Ajusta ancho de columnas
-            sheet.autoSizeColumn(0)
-            sheet.autoSizeColumn(1)
 
             // Escribir archivo
             file.outputStream().use { workbook.write(it) }
