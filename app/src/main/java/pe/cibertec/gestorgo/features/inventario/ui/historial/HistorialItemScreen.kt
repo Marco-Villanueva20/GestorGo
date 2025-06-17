@@ -13,13 +13,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,18 +39,30 @@ import pe.cibertec.gestorgo.features.inventario.domain.model.HistorialItem
 @Composable
 fun HistorialScreen(
     viewModel: HistorialItemViewModel = hiltViewModel(),
-    alEditar: (HistorialItem) -> Unit,
-    alIrADetalle: (HistorialItem) -> Unit
+    alEliminar: (Int) -> Unit,
+    onCrearNuevo: () -> Unit // Nuevo callback para el botón flotante
 ) {
     val uiState = viewModel.uiState.collectAsState()
 
-    LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
-        items(uiState.value.listaItems) { item ->
-            TarjetaHistorial(
-                historialItem = item,
-                alEditar = { alEditar(item) },
-                alIrADetalle = { alIrADetalle(item) }
-            )
+    // Envuelve el contenido en un Scaffold
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = onCrearNuevo) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Añadir nuevo registro"
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End // Posiciona el FAB en la esquina inferior derecha
+    ) { paddingValues -> // paddingValues es crucial para que el contenido no quede debajo del TopBar/FAB
+        LazyColumn(modifier = Modifier.padding(paddingValues)) { // Aplica el padding aquí
+            items(uiState.value.listaItems) { item ->
+                TarjetaHistorial(
+                    historialItem = item,
+                    alEliminar = { item.id?.let { alEliminar(it) } } // Si alEliminar también es para eliminar en tu caso. Parece que usas el icono de editar, quizás sea `alEditar`? Ajusta según tu lógica.
+                )
+            }
         }
     }
 }
@@ -55,8 +70,7 @@ fun HistorialScreen(
 @Composable
 fun TarjetaHistorial(
     historialItem: HistorialItem,
-    alEditar: () -> Unit,
-    alIrADetalle: () -> Unit
+    alEliminar: () -> Unit // Considera cambiar el nombre a 'alEditar' si el icono es de edición.
 ) {
     Card(
         modifier = Modifier
@@ -106,22 +120,15 @@ fun TarjetaHistorial(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Botones de editar y flecha
+            // Botones de editar (o eliminar, según la lógica que le hayas dado)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(onClick = alEditar) {
+                IconButton(onClick = alEliminar) { // Si realmente es eliminar, el icono Icons.Default.Delete sería más apropiado.
                     Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Editar",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                IconButton(onClick = alIrADetalle) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Ver Detalle",
+                        imageVector = Icons.Default.Delete, // Este icono es de edición. Si es para eliminar, usa Icons.Default.Delete
+                        contentDescription = "Editar/Eliminar", // Cambia esto según el icono
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -140,7 +147,6 @@ fun TarjetaHistorialPreview() {
             fecha = "Fecha",
             cantidad = 10
         ),
-        alEditar = {},
-        alIrADetalle = {}
+        alEliminar = {}
     )
 }
