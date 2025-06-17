@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import pe.cibertec.gestorgo.R
 import pe.cibertec.gestorgo.features.inventario.ui.historial.HistorialScreen
+import pe.cibertec.gestorgo.features.inventario.ui.historial.crear.CrearDetalleScreen
 import pe.cibertec.gestorgo.features.inventario.ui.item.crearitem.CreateScreen
 import pe.cibertec.gestorgo.features.inventario.ui.item.editaritem.EditarScreen
 import pe.cibertec.gestorgo.features.inventario.ui.lista.ListScreen
@@ -219,7 +220,19 @@ fun NavigationScreen(
                 composable<Report> { /* ReportScreen() */ }
                 composable<Users> { /* UsersScreen() */ }
             }
-            composable<Historial> { HistorialScreen(alEditar = {}, alIrADetalle = {})}
+            composable<Historial> { HistorialScreen(alEliminar = {}, onCrearNuevo = {
+                navController.navigate(CrearDetalle)
+            })}
+            composable<CrearDetalle> {
+                CrearDetalleScreen(
+                    onBackPressed = {
+                        navController.popBackStack()
+                    },
+                    onSuccess = {
+                        navController.popBackStack()
+                    }
+                )
+            }
             composable<Report> {
                 ReporteExportScreen()
             }
