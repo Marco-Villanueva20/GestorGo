@@ -15,11 +15,11 @@ class ItemsRepositoryImpl @Inject constructor(private val itemsRemoteDataSource:
         return itemsRemoteDataSource.getItems()
     }
 
-    override suspend fun crearItem(itemApiModel: ItemApiModel): PostgrestResult {
+    override suspend fun crearItem(itemApiModel: ItemApiModel): ItemApiModel {
         return itemsRemoteDataSource.crearItem(itemApiModel)
     }
 
-    override suspend fun actualizarItem(itemApiModel: ItemApiModel): PostgrestResult {
+    override suspend fun actualizarItem(itemApiModel: ItemApiModel): ItemApiModel {
         return itemsRemoteDataSource.actualizarItem(itemApiModel)
     }
 

@@ -6,8 +6,8 @@ import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
 
 interface ItemsRepository {
     suspend fun getItems(): Flow<List<ItemApiModel>>
-    suspend fun crearItem(itemApiModel: ItemApiModel): PostgrestResult
-    suspend fun actualizarItem(itemApiModel: ItemApiModel): PostgrestResult
+    suspend fun crearItem(itemApiModel: ItemApiModel): ItemApiModel
+    suspend fun actualizarItem(itemApiModel: ItemApiModel): ItemApiModel
     suspend fun eliminarItem(id: Int): PostgrestResult
     suspend fun obtenerItemPorId(id: Int): ItemApiModel
     suspend fun obtenerItemsConDetalles(): List<ItemApiModel>

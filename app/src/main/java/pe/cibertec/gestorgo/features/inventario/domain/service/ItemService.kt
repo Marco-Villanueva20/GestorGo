@@ -11,8 +11,8 @@ interface ItemService {
     suspend fun getItems(): Flow<List<ItemApiModel>>
 
     suspend fun getItem(id: Int): ItemApiModel
-    suspend fun crearItem(itemApiModel: ItemApiModel): PostgrestResult
-    suspend fun actualizarItem(itemApiModel: ItemApiModel): PostgrestResult
+    suspend fun crearItem(itemApiModel: ItemApiModel): ItemApiModel
+    suspend fun actualizarItem(itemApiModel: ItemApiModel): ItemApiModel
     suspend fun eliminarItem(id: Int): PostgrestResult
 
 
