@@ -114,8 +114,7 @@ class EditarItemViewModel @Inject constructor(private val itemsRepositoryImpl: I
     private fun validarCampos(): Boolean {
         val item = _uiState.value
         return item.nombre.isNotBlank() &&
-                item.descripcion.isNotBlank() &&
-                item.cantidad > 0
+                item.descripcion.isNotBlank()
     }
 
     // Asegúrate de que tu CreateItemUIState tenga un campo `uri: Uri?`
