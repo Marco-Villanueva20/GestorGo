@@ -12,6 +12,7 @@ data class ItemApiModel(
     var descripcion: String,
     @SerialName("imagen_url" ) var imagenUrl: String? = null,
     var cantidad: Int? = null,
+    var creado: String? = null,
     @SerialName("usuario_id") var usuarioId: String? = null,
     @Contextual @SerialName("detalle_items") val detalleItemApiModels: List<DetalleItemApiModel>? = null
 )

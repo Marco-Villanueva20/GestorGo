@@ -24,6 +24,7 @@ class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClien
     nombre, 
     descripcion, 
     cantidad,
+    imagen_url,
     detalle_items (
         id, 
         cantidad, 
@@ -67,21 +68,25 @@ class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClien
         }.decodeSingle<ItemApiModel>()
     }
 
-    override suspend fun crearItem(itemApiModel: ItemApiModel): PostgrestResult {
+    override suspend fun crearItem(itemApiModel: ItemApiModel):ItemApiModel {
         val idUsuario = client.auth.currentUserOrNull()
         itemApiModel.usuarioId = idUsuario?.id
-        return client.from("items").insert(itemApiModel)
+        return client.from("items").insert(itemApiModel){
+            select()
+        }.decodeSingle<ItemApiModel>()
     }
 
-    override suspend fun actualizarItem(itemApiModel: ItemApiModel): PostgrestResult {
+    override suspend fun actualizarItem(itemApiModel: ItemApiModel): ItemApiModel {
         val idUsuario = client.auth.currentUserOrNull()
         itemApiModel.usuarioId = idUsuario?.id
         return client.from("items").update(itemApiModel) {
+            select()
             filter {
-                itemApiModel.id?.let { eq("id", it) }
+                itemApiModel.id?.let {
+                    eq("id", it)
+                }
             }
-
-        }
+        }.decodeSingle<ItemApiModel>()
     }
 
     override suspend fun eliminarItem(id: Int): PostgrestResult {

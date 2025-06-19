@@ -75,16 +75,10 @@ class CreateItemViewModel
         }
     }
 
-
-
-
-
-
     private fun validarCampos(): Boolean {
         val item = _uiState.value
         return item.nombre.isNotBlank() &&
-                item.descripcion.isNotBlank() &&
-                item.cantidad > 0
+                item.descripcion.isNotBlank()
     }
 
     fun updateImage(uri: Uri?) {

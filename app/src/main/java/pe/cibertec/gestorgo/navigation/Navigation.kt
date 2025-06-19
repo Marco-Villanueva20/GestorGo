@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +55,7 @@ import pe.cibertec.gestorgo.features.inventario.ui.item.editaritem.EditarScreen
 import pe.cibertec.gestorgo.features.inventario.ui.lista.ListScreen
 import pe.cibertec.gestorgo.features.inventario.ui.reporte.ReporteExportScreen
 import pe.cibertec.gestorgo.features.usuario.ui.iniciosesion.InicioSesionScreen
+import pe.cibertec.gestorgo.features.usuario.ui.list.UsuarioScreen
 import pe.cibertec.gestorgo.features.usuario.ui.registro.RegistroScreen
 
 
@@ -68,6 +71,9 @@ fun NavigationScreen(
     val showBottomBar = bottomLevelRoutes.any { route ->
         currentDestination?.hierarchy?.any { it.hasRoute(route.route::class) } == true
     }
+    println(currentDestination)
+
+
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             if (showBottomBar) {
@@ -147,6 +153,22 @@ fun NavigationScreen(
                     }
                 }
             }
+        },
+        floatingActionButton = {
+            if (currentDestination?.hierarchy?.any{it.hasRoute( Home::class)} == true) {
+                FloatingActionButton (onClick = {
+                    navController.navigate(CreateItem)
+                }) {
+                    Icon(Icons.Filled.Add, contentDescription = "Agregar")
+                }
+            }
+            if (currentDestination?.hierarchy?.any{it.hasRoute( Historial::class)} == true) {
+                FloatingActionButton (onClick = {
+                    navController.navigate(CrearDetalle)
+                }) {
+                    Icon(Icons.Filled.Add, contentDescription = "Agregar")
+                }
+            }
         }
     ) { paddingValues ->
         NavHost(
@@ -173,8 +195,6 @@ fun NavigationScreen(
             }
             composable<Home> {
                 ListScreen(
-                    onCreateClick = { navController.navigate(CreateItem) },
-                    // MODIFICADO: Pasar los parámetros individuales a EditItem
                     onEditClick = { item ->
                         navController.navigate(
                             EditItem(
@@ -204,7 +224,7 @@ fun NavigationScreen(
                     onUpdate = {
                         navController.popBackStack()
                     },
-                    onCancel = {}
+                    onCancel = { navController.popBackStack()}
                 )
             }
             composable<CreateItem> {
@@ -215,14 +235,10 @@ fun NavigationScreen(
                     onSaved = {
                         navController.popBackStack()
                     },
-                    onCancelClick = {}
+                    onCancelClick = { navController.popBackStack()}
                 )
-                composable<Report> { /* ReportScreen() */ }
-                composable<Users> { /* UsersScreen() */ }
             }
-            composable<Historial> { HistorialScreen(alEliminar = {}, onCrearNuevo = {
-                navController.navigate(CrearDetalle)
-            })}
+            composable<Historial> { HistorialScreen()}
             composable<CrearDetalle> {
                 CrearDetalleScreen(
                     onBackPressed = {
@@ -232,6 +248,9 @@ fun NavigationScreen(
                         navController.popBackStack()
                     }
                 )
+            }
+            composable<Users>{
+                UsuarioScreen()
             }
             composable<Report> {
                 ReporteExportScreen()

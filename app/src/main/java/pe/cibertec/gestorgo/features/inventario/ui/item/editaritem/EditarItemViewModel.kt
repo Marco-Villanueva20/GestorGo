@@ -36,8 +36,8 @@ class EditarItemViewModel @Inject constructor(private val itemsRepositoryImpl: I
     fun setItemToEdit(item: Item) {
         currentItemId = item.id // Guarda el ID del ítem
         _uiState.value = _uiState.value.copy(
-            nombre = item.nombre ?: "", // Asegura que no sea null
-            descripcion = item.descripcion ?: "", // Asegura que no sea null
+            nombre = item.nombre, // Asegura que no sea null
+            descripcion = item.descripcion, // Asegura que no sea null
             cantidad = item.cantidad ?: 0, // Asegura que no sea null
             // !!! Aquí está el cambio clave: Convertir la imagenUrl a Uri si existe
             uri = item.imagenUrl?.let { Uri.parse(it) } // Si es URL de internet, Coil la manejará
@@ -114,8 +114,7 @@ class EditarItemViewModel @Inject constructor(private val itemsRepositoryImpl: I
     private fun validarCampos(): Boolean {
         val item = _uiState.value
         return item.nombre.isNotBlank() &&
-                item.descripcion.isNotBlank() &&
-                item.cantidad > 0
+                item.descripcion.isNotBlank()
     }
 
     // Asegúrate de que tu CreateItemUIState tenga un campo `uri: Uri?`

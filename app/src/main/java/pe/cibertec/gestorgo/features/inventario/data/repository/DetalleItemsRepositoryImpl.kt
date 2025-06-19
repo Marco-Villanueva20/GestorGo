@@ -1,6 +1,5 @@
 package pe.cibertec.gestorgo.features.inventario.data.repository
 
-import io.github.jan.supabase.postgrest.result.PostgrestResult
 import pe.cibertec.gestorgo.features.inventario.data.model.DetalleItemApiModel
 import pe.cibertec.gestorgo.features.inventario.data.remote.DetalleItemRemoteDataSource
 import pe.cibertec.gestorgo.features.inventario.domain.repository.DetalleItemsRepository
@@ -17,7 +16,7 @@ class DetalleItemsRepositoryImpl @Inject constructor(private val detalleItemRemo
         return detalleItemRemoteDataSource.crearDetalleItem(detalleItemApiModel)
     }
 
-    override suspend fun actualizarDetalleItem(detalleItemApiModel: DetalleItemApiModel): PostgrestResult {
+    override suspend fun actualizarDetalleItem(detalleItemApiModel: DetalleItemApiModel): DetalleItemApiModel {
         return detalleItemRemoteDataSource.actualizarDetalleItem(detalleItemApiModel)
     }
 

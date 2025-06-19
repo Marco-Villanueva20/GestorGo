@@ -175,6 +175,7 @@ fun EditarScreen(
                 label = { Text("Stock Total Disponible") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                enabled = false,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 shape = RoundedCornerShape(12.dp)
             )

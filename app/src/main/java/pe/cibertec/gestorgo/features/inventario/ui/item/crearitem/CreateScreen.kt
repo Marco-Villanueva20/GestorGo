@@ -157,7 +157,8 @@ fun CreateScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                enabled = false
             )
             Spacer(modifier = Modifier.height(32.dp)) // Espacio antes de los botones
 

@@ -57,7 +57,7 @@ import java.time.format.DateTimeFormatter
 fun CrearDetalleScreen(
     viewModel: CrearDetalleViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
-    onSuccess: () -> Unit // Callback para cuando se registra el movimiento
+    onSuccess: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -283,7 +283,7 @@ fun ItemSelectionRow(
                 model = url,
                 contentDescription = "Imagen de ${item.nombre}",
                 modifier = Modifier
-                    .size(48.dp) // Tamaño de la imagen en el selector
+                    .size(20.dp) // Tamaño de la imagen en el selector
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.LightGray)
             )
@@ -301,144 +301,3 @@ fun ItemSelectionRow(
         }
     }
 }
-
-// Asegúrate de que este archivo DetalleMovimientoUIState esté en el mismo paquete
-// o importado correctamente si está en otro lado.
-// package pe.cibertec.gestorgo.features.inventario.ui.historial.crear
-
-// import pe.cibertec.gestorgo.features.inventario.domain.model.Item
-
-// data class DetalleMovimientoUIState(
-//     val tipoMovimiento: String = "Ingreso", // "Ingreso" o "Salida"
-//     val cantidad: String = "",
-//     val listaItems: List<Item> = emptyList(),
-//     val itemSeleccionado: Item? = null,
-//     val showItemSelectionDialog: Boolean = false, // Para controlar la visibilidad del diálogo
-//     val isLoading: Boolean = false,
-//     val errorMessage: String? = null
-// )
-
-
-// Asegúrate de que este ViewModel esté en el mismo paquete
-// o importado correctamente si está en otro lado.
-// package pe.cibertec.gestorgo.features.inventario.ui.historial.crear
-
-// import androidx.lifecycle.ViewModel
-// import androidx.lifecycle.viewModelScope
-// import dagger.hilt.android.lifecycle.HiltViewModel
-// import kotlinx.coroutines.flow.MutableStateFlow
-// import kotlinx.coroutines.flow.StateFlow
-// import kotlinx.coroutines.flow.asStateFlow
-// import kotlinx.coroutines.flow.update
-// import kotlinx.coroutines.launch
-// import pe.cibertec.gestorgo.features.inventario.data.model.DetalleItemApiModel
-// import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
-// import pe.cibertec.gestorgo.features.inventario.domain.model.Item
-// import pe.cibertec.gestorgo.features.inventario.domain.repository.DetalleItemsRepository
-// import pe.cibertec.gestorgo.features.inventario.domain.repository.ItemsRepository
-// import javax.inject.Inject
-
-// @HiltViewModel
-// class CrearDetalleViewModel @Inject constructor(
-//     private val detalleItemsRepository: DetalleItemsRepository,
-//     private val itemsRepository: ItemsRepository
-// ) : ViewModel() {
-
-//     private val _uiState = MutableStateFlow(DetalleMovimientoUIState())
-//     val uiState: StateFlow<DetalleMovimientoUIState> = _uiState.asStateFlow()
-
-//     init {
-//         cargarItemsDisponibles()
-//     }
-
-//     private fun cargarItemsDisponibles() {
-//         viewModelScope.launch {
-//             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-//             try {
-//                 val itemApiList = itemsRepository.obtenerItemsConDetalles()
-//                 val items = itemApiList.map { it.toItemDomain() }
-//                 _uiState.update { it.copy(listaItems = items, isLoading = false) }
-//             } catch (e: Exception) {
-//                 _uiState.update { it.copy(isLoading = false, errorMessage = "Error al cargar ítems: ${e.message}") }
-//             }
-//         }
-//     }
-
-//     fun onTipoMovimientoChange(tipo: String) {
-//         _uiState.update { it.copy(tipoMovimiento = tipo) }
-//     }
-
-//     fun onCantidadChange(cantidad: String) {
-//         _uiState.update { it.copy(cantidad = cantidad.filter { char -> char.isDigit() }) }
-//     }
-
-//     fun onItemSeleccionado(item: Item) {
-//         _uiState.update { it.copy(itemSeleccionado = item, showItemSelectionDialog = false) }
-//     }
-
-//     fun showItemSelectionDialog() {
-//         _uiState.update { it.copy(showItemSelectionDialog = true) }
-//     }
-
-//     fun dismissItemSelectionDialog() {
-//         _uiState.update { it.copy(showItemSelectionDialog = false) }
-//     }
-
-//     fun registrarMovimiento(onSuccess: () -> Unit) {
-//         viewModelScope.launch {
-//             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-//             val selectedItem = _uiState.value.itemSeleccionado
-//             val cantidad = _uiState.value.cantidad.toIntOrNull()
-
-//             if (selectedItem == null || cantidad == null || cantidad <= 0) {
-//                 _uiState.update { it.copy(errorMessage = "Selecciona un ítem y una cantidad válida.", isLoading = false) }
-//                 return@launch
-//             }
-
-//             try {
-//                 val nuevaCantidadItem = if (_uiState.value.tipoMovimiento == "Ingreso") {
-//                     (selectedItem.cantidad ?: 0) + cantidad
-//                 } else {
-//                     val stockActual = selectedItem.cantidad ?: 0
-//                     if (cantidad > stockActual) {
-//                         _uiState.update { it.copy(errorMessage = "La cantidad de salida excede el stock disponible.", isLoading = false) }
-//                         return@launch
-//                     }
-//                     stockActual - cantidad
-//                 }
-
-//                 val itemToUpdate = ItemApiModel(
-//                     id = selectedItem.id,
-//                     nombre = selectedItem.nombre,
-//                     descripcion = selectedItem.descripcion,
-//                     imagenUrl = selectedItem.imagenUrl,
-//                     cantidad = nuevaCantidadItem,
-//                     usuarioId = selectedItem.usuarioId
-//                 )
-//                 itemsRepository.actualizarItem(itemToUpdate)
-
-//                 val detalleItemApiModel = DetalleItemApiModel(
-//                     cantidad = if (_uiState.value.tipoMovimiento == "Ingreso") cantidad else -cantidad,
-//                     itemId = selectedItem.id!!
-//                 )
-//                 detalleItemsRepository.crearDetalleItem(detalleItemApiModel)
-
-//                 _uiState.update { it.copy(isLoading = false) }
-//                 onSuccess()
-//             } catch (e: Exception) {
-//                 _uiState.update { it.copy(isLoading = false, errorMessage = "Error al registrar movimiento: ${e.message}") }
-//             }
-//         }
-//     }
-
-//     private fun ItemApiModel.toItemDomain(): Item {
-//         return Item(
-//             id = this.id,
-//             nombre = this.nombre,
-//             descripcion = this.descripcion,
-//             imagenUrl = this.imagenUrl,
-//             cantidad = this.cantidad,
-//             usuarioId = this.usuarioId
-//         )
-//     }
-// }

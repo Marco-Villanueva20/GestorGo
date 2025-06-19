@@ -35,13 +35,10 @@ class CrearDetalleViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
                 val itemApiList = itemsRepository.obtenerItemsConDetalles() // O la función que uses
-                Log.d("CrearDetalleVM", "Items cargados de la API: ${itemApiList.size}") // <-- AGREGAR ESTO
                 val items = itemApiList.map { it.toItemDomain() }
-                Log.d("CrearDetalleVM", "Items mapeados a dominio: ${items.size}") // <-- Y ESTO
                 _uiState.update { it.copy(listaItems = items, isLoading = false) }
 
             } catch (e: Exception) {
-                Log.e("CrearDetalleVM", "Error al cargar ítems: ${e.message}", e) // <-- Y ESTO PARA ERRORES
                 _uiState.update { it.copy(isLoading = false, errorMessage = "Error al cargar ítems: ${e.message}") }
             }
         }
@@ -101,18 +98,24 @@ class CrearDetalleViewModel @Inject constructor(
                     cantidad = nuevaCantidadItem,
                     usuarioId = selectedItem.usuarioId
                 )
-                itemsRepository.actualizarItem(itemToUpdate) // Asumiendo que esta función existe y actualiza por ID
+                itemsRepository.actualizarItem(itemToUpdate)
+                Log.d("CrearDetalleViewModel", "Item actualizado: $itemToUpdate")
 
                 // Luego, registrar el detalle del movimiento en la tabla 'detalle_items'
                 val detalleItemApiModel = DetalleItemApiModel(
-                    cantidad = if (_uiState.value.tipoMovimiento == "Ingreso") cantidad else -cantidad, // Cantidad positiva para ingreso, negativa para salida
-                    itemId = selectedItem.id!! // Asegúrate de que el ID del item no sea null
+                    cantidad = if (_uiState.value.tipoMovimiento == "Ingreso") cantidad else -cantidad,
+                    itemId = selectedItem.id!!
                 )
-                detalleItemsRepository.crearDetalleItem(detalleItemApiModel)
+                detalleItemsRepository.crearDetalleItem(detalleItemApiModel) // <-- Aquí es donde probablemente falla
+                Log.d("CrearDetalleViewModel", "Detalle de movimiento creado: $detalleItemApiModel") // <-- Esta línea no se ejecuta
 
                 _uiState.update { it.copy(isLoading = false) }
-                onSuccess() // Llamar al callback de éxito
+                Log.d("CrearDetalleViewModel", "Movimiento registrado exitosamente.")
+                onSuccess()
+                Log.d("CrearDetalleViewModel", "Callback de éxito llamado.")
             } catch (e: Exception) {
+                // ¡MUY IMPORTANTE! Loguea la excepción completa para diagnosticar.
+                Log.e("CrearDetalleViewModel", "Error al registrar movimiento: ${e.message}", e)
                 _uiState.update { it.copy(isLoading = false, errorMessage = "Error al registrar movimiento: ${e.message}") }
             }
         }
