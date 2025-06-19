@@ -25,6 +25,7 @@ data class BottomLevelRoute<T : Any>(
 @Serializable data object Register
 @Serializable data object CrearDetalle
 
+
 @Serializable data class EditItem(val id: Int? = null,
                                   val nombre: String,
                                   val descripcion: String,

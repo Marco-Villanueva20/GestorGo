@@ -97,10 +97,7 @@ fun ListScreen(
             DeleteConfirmationDialog(
                 itemName = item.nombre,
                 onConfirm = {
-                    viewModel.deleteConfirmed {
-                        // Opcional: callback para acciones después de eliminar, como un Toast.
-                        // onDeleteClick(item.id!!) // Si aun quieres que se notifique al navegar
-                    }
+                    viewModel.deleteConfirmed {}
                 },
                 onDismiss = { viewModel.dismissDeleteConfirmationDialog() }
             )
@@ -242,7 +239,7 @@ fun BarraBusquedaHistorial(
                 contentDescription = "Buscar"
             )
         },
-        placeholder = { Text("Buscar en historial") },
+        placeholder = { Text("Buscar en la lista de artículos") },
         singleLine = true,
         shape = MaterialTheme.shapes.extraLarge,
         modifier = modifier

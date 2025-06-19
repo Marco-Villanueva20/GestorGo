@@ -63,7 +63,7 @@ dependencies {
 
     implementation("org.apache.poi:poi-ooxml:5.2.3")
 
-
+    implementation("androidx.core:core-splashscreen:1.0.0")
 
     implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
