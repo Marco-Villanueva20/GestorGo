@@ -16,14 +16,13 @@ import pe.cibertec.gestorgo.features.usuario.domain.service.UsuariosService
 import javax.inject.Inject
 
 
-
-class UsuariosRemoteDataSource @Inject constructor(private val client: SupabaseClient):
+class UsuariosRemoteDataSource @Inject constructor(private val client: SupabaseClient) :
     UsuariosService {
     override suspend fun obtenerUsuarios(): List<Usuario> {
-        val usuarios: List<Usuario> = client
+        val usuarios = client
             .from("usuarios")
             .select()
-            .decodeList()
+            .decodeList<Usuario>()
         return usuarios
     }
 
@@ -44,7 +43,7 @@ class UsuariosRemoteDataSource @Inject constructor(private val client: SupabaseC
     }
 
     override suspend fun register(password: String, usuario: Usuario): UserInfo? {
-        val usuarioCreado : UserInfo? = client.auth.signUpWith(Email) {
+        val usuarioCreado: UserInfo? = client.auth.signUpWith(Email) {
             email = usuario.email
             this.password = password
             data = buildJsonObject {
@@ -68,6 +67,7 @@ class UsuariosRemoteDataSource @Inject constructor(private val client: SupabaseC
 
     override suspend fun obtenerUsuario(id: String): Usuario {
         return client.from("usuarios").select {
+            select()
             filter {
                 eq("id", id)
             }
@@ -75,7 +75,9 @@ class UsuariosRemoteDataSource @Inject constructor(private val client: SupabaseC
     }
 
     override suspend fun crearUsuario(usuario: Usuario): Usuario {
-        return client.from("usuarios").insert(usuario).decodeSingle<Usuario>()
+        return client.from("usuarios").insert(usuario) {
+            select()
+        }.decodeSingle<Usuario>()
     }
 
     override suspend fun actualizarUsuario(usuario: Usuario): Usuario {
