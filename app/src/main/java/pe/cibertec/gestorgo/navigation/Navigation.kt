@@ -78,49 +78,19 @@ fun NavigationScreen(
         topBar = {
             if (showBottomBar) {
                 TopAppBar(
-                    title = {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            IconButton(onClick = { /* menú lateral */ }) {
-                                Icon(Icons.Filled.Menu, contentDescription = "Menú")
-                            }
-                            Surface(
-                                Modifier
-                                    .weight(1f)
-                                    .height(40.dp),
-                                shape = MaterialTheme.shapes.extraLarge,
-                                color = Color.White
-                            ) {
-                                Row(
-                                    Modifier
-                                        .fillMaxSize()
-                                        .padding(horizontal = 8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        Icons.Filled.Search,
-                                        contentDescription = "Buscar",
-                                        tint = Color.Gray
-                                    )
-                                    Spacer(Modifier.width(8.dp))
-                                    Text("Buscar", color = Color.Gray)
-                                }
-                            }
-                            Spacer(Modifier.width(8.dp))
-                            Image(
-                                painter = painterResource(R.drawable.login),
-                                contentDescription = "Perfil",
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clip(CircleShape)
-                                    .clickable { /* perfil */ }
-                            )
-                        }
+                    title = { Text("Usuarios") },
+                    actions = {
+                        Image(
+                            painter = painterResource(R.drawable.login),
+                            contentDescription = "Perfil",
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .clickable { /* Acción de perfil */ }
+                        )
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
                 )
             }
         },
