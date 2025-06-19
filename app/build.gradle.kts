@@ -1,6 +1,3 @@
-import com.android.build.api.dsl.Packaging
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
