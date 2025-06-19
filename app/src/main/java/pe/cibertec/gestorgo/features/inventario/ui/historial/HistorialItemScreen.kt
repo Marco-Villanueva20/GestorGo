@@ -1,4 +1,3 @@
-
 package pe.cibertec.gestorgo.features.inventario.ui.historial
 
 import android.util.Log
@@ -47,51 +46,58 @@ fun HistorialScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState().value // Usa .value para acceder directamente al estado
 
-        LazyColumn {
-            items(uiState.listaItems) { item ->
-                TarjetaHistorial(
-                    historialItem = item,
-                    alEliminarConfirmacion = {
-                        // Pasamos el ID del detalle (item.id), el ID del item principal (item.parentItemId) y la cantidad del detalle
-                        item.id?.let { detalleId -> // `item.id` es ahora el ID del DetalleItem (correctamente)
-                            item.parentItemId?.let { parentItemId -> // `item.parentItemId` es el ID del Item principal
-                                viewModel.showDeleteConfirmationDialog(detalleId, parentItemId, item.cantidad)
-                            } ?: Log.e("HistorialScreen", "Error: parentItemId del historial es nulo para eliminar.")
-                        } ?: Log.e("HistorialScreen", "Error: HistorialId es nulo para eliminar.")
-                    }
-                )
-            }
-
-        }
-
-        // --- Diálogo de Confirmación ---
-        if (uiState.showConfirmDialog) {
-            AlertDialog(
-                onDismissRequest = { viewModel.dismissDeleteConfirmationDialog() },
-                title = { Text(text = "Confirmar Eliminación") },
-                text = { Text(text = "¿Estás seguro de que quieres eliminar este registro de historial? Se ajustará la cantidad del ítem principal.") },
-                confirmButton = {
-                    Button(onClick = { viewModel.confirmDeleteItem() }) {
-                        Text("Sí, Eliminar")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { viewModel.dismissDeleteConfirmationDialog() }) {
-                        Text("Cancelar")
-                    }
+    LazyColumn {
+        items(uiState.listaItems) { item ->
+            TarjetaHistorial(
+                historialItem = item,
+                alEliminarConfirmacion = {
+                    // Pasamos el ID del detalle (item.id), el ID del item principal (item.parentItemId) y la cantidad del detalle
+                    item.id?.let { detalleId -> // `item.id` es ahora el ID del DetalleItem (correctamente)
+                        item.parentItemId?.let { parentItemId -> // `item.parentItemId` es el ID del Item principal
+                            viewModel.showDeleteConfirmationDialog(
+                                detalleId,
+                                parentItemId,
+                                item.cantidad
+                            )
+                        } ?: Log.e(
+                            "HistorialScreen",
+                            "Error: parentItemId del historial es nulo para eliminar."
+                        )
+                    } ?: Log.e("HistorialScreen", "Error: HistorialId es nulo para eliminar.")
                 }
             )
         }
 
-        // Mostrar un mensaje de error si existe
-        if (uiState.errorMessage != null) {
-            // Puedes mostrar un SnackBar o un Toast aquí
-            Text(
-                text = "Error: ${uiState.errorMessage}",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
+    }
+
+    // --- Diálogo de Confirmación ---
+    if (uiState.showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissDeleteConfirmationDialog() },
+            title = { Text(text = "Confirmar Eliminación") },
+            text = { Text(text = "¿Estás seguro de que quieres eliminar este registro de historial? Se ajustará la cantidad del ítem principal.") },
+            confirmButton = {
+                Button(onClick = { viewModel.confirmDeleteItem() }) {
+                    Text("Sí, Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.dismissDeleteConfirmationDialog() }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    // Mostrar un mensaje de error si existe
+    if (uiState.errorMessage != null) {
+        // Puedes mostrar un SnackBar o un Toast aquí
+        Text(
+            text = "Error: ${uiState.errorMessage}",
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
 
 }
 
@@ -134,7 +140,8 @@ fun TarjetaHistorial(
                     )
                 }
                 // Mostrar la cantidad con un color para diferenciar ingreso/salida
-                val cantidadColor = if (historialItem.cantidad >= 0) Color(0xFF4CAF50) else Color(0xFFF44336) // Verde para ingreso, Rojo para salida
+                val cantidadColor =
+                    if (historialItem.cantidad >= 0) Color(0xFF4CAF50) else Color(0xFFF44336) // Verde para ingreso, Rojo para salida
                 Text(
                     text = "${if (historialItem.cantidad > 0) "+" else ""}${historialItem.cantidad}", // Añade '+' si es positivo
                     fontSize = 16.sp, // Tamaño de fuente ajustado

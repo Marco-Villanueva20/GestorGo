@@ -1,6 +1,5 @@
 package pe.cibertec.gestorgo.features.inventario.domain.repository
 
-import io.github.jan.supabase.postgrest.result.PostgrestResult
 import pe.cibertec.gestorgo.features.inventario.data.model.DetalleItemApiModel
 
 interface DetalleItemsRepository {

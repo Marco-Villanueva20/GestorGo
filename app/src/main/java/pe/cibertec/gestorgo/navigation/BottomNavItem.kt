@@ -6,11 +6,7 @@ import androidx.compose.material.icons.filled.InsertChart
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavType
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.modules.SerializersModule
-import pe.cibertec.gestorgo.features.inventario.domain.model.Item
 
 
 // Data class para tus rutas de barra inferior
