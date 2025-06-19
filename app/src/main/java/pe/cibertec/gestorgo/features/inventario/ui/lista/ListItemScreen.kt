@@ -59,28 +59,28 @@ fun ListScreen(
     val showDeleteDialog by viewModel.showDeleteConfirmationDialog.collectAsState()
     val itemToDelete by viewModel.itemToDelete.collectAsState()
 
-        items.let { itemList ->
-            LazyColumn(
-               //
-                contentPadding = PaddingValues(horizontal = 12.dp)
-            ) {
-                items(itemList) { item ->
-                    ItemCard(
-                        item = item,
-                        isExpanded = expandedItemId == item.id.toString(),
-                        onClick = {
-                            expandedItemId =
-                                if (expandedItemId == item.id.toString()) null else item.id.toString()
-                        },
-                        onEditClick = onEditClick,
-                        // --- Cambio aquí: Pasar la función del ViewModel para confirmar eliminación ---
-                        onDeleteClick = { viewModel.confirmDeleteItem(item) }
-                        // -------------------------------------------------------------------------
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+    items.let { itemList ->
+        LazyColumn(
+            //
+            contentPadding = PaddingValues(horizontal = 12.dp)
+        ) {
+            items(itemList) { item ->
+                ItemCard(
+                    item = item,
+                    isExpanded = expandedItemId == item.id.toString(),
+                    onClick = {
+                        expandedItemId =
+                            if (expandedItemId == item.id.toString()) null else item.id.toString()
+                    },
+                    onEditClick = onEditClick,
+                    // --- Cambio aquí: Pasar la función del ViewModel para confirmar eliminación ---
+                    onDeleteClick = { viewModel.confirmDeleteItem(item) }
+                    // -------------------------------------------------------------------------
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
+    }
 
 
     // --- Mostrar el diálogo de confirmación si el estado lo indica ---

@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -23,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,6 +48,12 @@ fun HistorialScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState().value // Usa .value para acceder directamente al estado
 
+Column {
+    BarraBusquedaHistorial(
+        texto = "",//uiState.textoBusqueda,
+        onTextoCambio ={}, //{ viewModel.actualizarTextoBusqueda(it) },
+        modifier = Modifier.fillMaxWidth()
+    )
     LazyColumn {
         items(uiState.listaItems) { item ->
             TarjetaHistorial(
@@ -69,6 +77,7 @@ fun HistorialScreen(
         }
 
     }
+}
 
     // --- Diálogo de Confirmación ---
     if (uiState.showConfirmDialog) {
@@ -176,6 +185,33 @@ fun TarjetaHistorial(
         }
     }
 }
+
+@Composable
+fun BarraBusquedaHistorial(
+    texto: String,
+    onTextoCambio: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = texto,
+        onValueChange = onTextoCambio,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Buscar"
+            )
+        },
+        placeholder = { Text("Buscar en historial") },
+        singleLine = true,
+        shape = MaterialTheme.shapes.extraLarge,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    )
+}
+
+
+
 
 
 @Preview(showBackground = true)

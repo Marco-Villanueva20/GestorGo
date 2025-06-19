@@ -42,7 +42,3 @@ val bottomLevelRoutes = listOf(
     BottomLevelRoute("Reporte", Report, Icons.Filled.InsertChart),
     BottomLevelRoute("Usuarios", Users, Icons.Filled.Person)
 )
-val floatingButtonRoutes = listOf(
-    BottomLevelRoute("Historial", Historial, Icons.Filled.Inventory),
-    BottomLevelRoute("Lista", Home, Icons.Filled.Home),
-)
