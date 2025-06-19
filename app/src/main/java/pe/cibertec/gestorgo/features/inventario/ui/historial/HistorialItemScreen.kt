@@ -201,7 +201,7 @@ fun BarraBusquedaHistorial(
                 contentDescription = "Buscar"
             )
         },
-        placeholder = { Text("Buscar en historial") },
+        placeholder = { Text("Buscar en el historial de movimientos") },
         singleLine = true,
         shape = MaterialTheme.shapes.extraLarge,
         modifier = modifier

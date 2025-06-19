@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,6 +26,7 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -59,25 +61,31 @@ fun ListScreen(
     val showDeleteDialog by viewModel.showDeleteConfirmationDialog.collectAsState()
     val itemToDelete by viewModel.itemToDelete.collectAsState()
 
-    items.let { itemList ->
-        LazyColumn(
-            //
-            contentPadding = PaddingValues(horizontal = 12.dp)
-        ) {
-            items(itemList) { item ->
-                ItemCard(
-                    item = item,
-                    isExpanded = expandedItemId == item.id.toString(),
-                    onClick = {
-                        expandedItemId =
-                            if (expandedItemId == item.id.toString()) null else item.id.toString()
-                    },
-                    onEditClick = onEditClick,
-                    // --- Cambio aquí: Pasar la función del ViewModel para confirmar eliminación ---
-                    onDeleteClick = { viewModel.confirmDeleteItem(item) }
-                    // -------------------------------------------------------------------------
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+    Column {
+        BarraBusquedaHistorial(
+            texto = "",//uiState.textoBusqueda,
+            onTextoCambio = { },//viewModel.actualizarTextoBusqueda(it) },
+            modifier = Modifier.fillMaxWidth()
+        )
+        items.let { itemList ->
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 12.dp)
+            ) {
+                items(itemList) { item ->
+                    ItemCard(
+                        item = item,
+                        isExpanded = expandedItemId == item.id.toString(),
+                        onClick = {
+                            expandedItemId =
+                                if (expandedItemId == item.id.toString()) null else item.id.toString()
+                        },
+                        onEditClick = onEditClick,
+                        // --- Cambio aquí: Pasar la función del ViewModel para confirmar eliminación ---
+                        onDeleteClick = { viewModel.confirmDeleteItem(item) }
+                        // -------------------------------------------------------------------------
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
@@ -89,10 +97,7 @@ fun ListScreen(
             DeleteConfirmationDialog(
                 itemName = item.nombre,
                 onConfirm = {
-                    viewModel.deleteConfirmed {
-                        // Opcional: callback para acciones después de eliminar, como un Toast.
-                        // onDeleteClick(item.id!!) // Si aun quieres que se notifique al navegar
-                    }
+                    viewModel.deleteConfirmed {}
                 },
                 onDismiss = { viewModel.dismissDeleteConfirmationDialog() }
             )
@@ -216,5 +221,29 @@ fun DeleteConfirmationDialog(
             dismissOnBackPress = true, // Permite cerrar con el botón de atrás
             dismissOnClickOutside = true // Permite cerrar haciendo clic fuera del diálogo
         )
+    )
+}
+
+@Composable
+fun BarraBusquedaHistorial(
+    texto: String,
+    onTextoCambio: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = texto,
+        onValueChange = onTextoCambio,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Buscar"
+            )
+        },
+        placeholder = { Text("Buscar en la lista de artículos") },
+        singleLine = true,
+        shape = MaterialTheme.shapes.extraLarge,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     )
 }
