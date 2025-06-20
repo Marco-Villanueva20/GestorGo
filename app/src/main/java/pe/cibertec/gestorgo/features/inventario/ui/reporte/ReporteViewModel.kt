@@ -28,7 +28,7 @@ class ReporteViewModel @Inject constructor(private val reporteRepository: ItemsR
 
     fun listarItems() {
         viewModelScope.launch {
-            reporteRepository.getItems().collect { lista ->
+            reporteRepository.obtenerItems().collect { lista ->
                 val itemsReporte: List<Reporte> = lista.map { it.toReporte() }
                 _uiState.value = _uiState.value.copy(listaItems = itemsReporte)
             }

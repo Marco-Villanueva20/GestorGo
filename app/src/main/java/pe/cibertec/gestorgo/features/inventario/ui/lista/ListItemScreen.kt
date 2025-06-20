@@ -54,38 +54,39 @@ fun ListScreen(
     onEditClick: (Item) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val items = uiState.listaItems
+    val items = uiState.listaItems // Ahora items contendrá la lista filtrada o completa
     var expandedItemId by remember { mutableStateOf<String?>(null) }
 
-    // --- Nuevos estados del ViewModel para el diálogo ---
+    // --- Estados del ViewModel para el diálogo ---
     val showDeleteDialog by viewModel.showDeleteConfirmationDialog.collectAsState()
     val itemToDelete by viewModel.itemToDelete.collectAsState()
 
+    // --- Estado de la consulta de búsqueda del ViewModel ---
+    val searchQuery by viewModel.searchQuery.collectAsState() // <-- Recoge el estado del query de búsqueda
+
     Column {
+        // Pasa el estado y el callback del ViewModel a la BarraBusquedaHistorial
         BarraBusquedaHistorial(
-            texto = "",//uiState.textoBusqueda,
-            onTextoCambio = { },//viewModel.actualizarTextoBusqueda(it) },
+            texto = searchQuery, // <-- Conectado al _searchQuery del ViewModel
+            onTextoCambio = { viewModel.onSearchQueryChange(it) }, // <-- Llama a la función del ViewModel
             modifier = Modifier.fillMaxWidth()
         )
-        items.let { itemList ->
-            LazyColumn(
-                contentPadding = PaddingValues(horizontal = 12.dp)
-            ) {
-                items(itemList) { item ->
-                    ItemCard(
-                        item = item,
-                        isExpanded = expandedItemId == item.id.toString(),
-                        onClick = {
-                            expandedItemId =
-                                if (expandedItemId == item.id.toString()) null else item.id.toString()
-                        },
-                        onEditClick = onEditClick,
-                        // --- Cambio aquí: Pasar la función del ViewModel para confirmar eliminación ---
-                        onDeleteClick = { viewModel.confirmDeleteItem(item) }
-                        // -------------------------------------------------------------------------
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+        // No es necesario el 'items.let', ya que 'items' ya es la lista del uiState
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 12.dp)
+        ) {
+            items(items) { item -> // Ahora 'items' ya está filtrado por el ViewModel
+                ItemCard(
+                    item = item,
+                    isExpanded = expandedItemId == item.id.toString(),
+                    onClick = {
+                        expandedItemId =
+                            if (expandedItemId == item.id.toString()) null else item.id.toString()
+                    },
+                    onEditClick = onEditClick,
+                    onDeleteClick = { viewModel.confirmDeleteItem(item) }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -97,14 +98,16 @@ fun ListScreen(
             DeleteConfirmationDialog(
                 itemName = item.nombre,
                 onConfirm = {
-                    viewModel.deleteConfirmed {}
+                    viewModel.deleteConfirmed {} // Puedes pasar un callback para un Toast si es necesario
                 },
                 onDismiss = { viewModel.dismissDeleteConfirmationDialog() }
             )
         }
     }
-    // -----------------------------------------------------------------
 }
+
+// Las siguientes funciones (ItemCard, DeleteConfirmationDialog, BarraBusquedaHistorial)
+// no necesitan cambios, ya que ahora reciben los datos y callbacks correctos.
 
 @Composable
 fun ItemCard(
@@ -112,7 +115,7 @@ fun ItemCard(
     modifier: Modifier = Modifier,
     isExpanded: Boolean = false,
     onEditClick: (Item) -> Unit = {},
-    onDeleteClick: () -> Unit = {}, // Esta ahora es para disparar la confirmación
+    onDeleteClick: () -> Unit = {},
     onClick: () -> Unit = {},
 ) {
     Card(
@@ -180,7 +183,7 @@ fun ItemCard(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     FilledIconButton(
-                        onClick = onDeleteClick, // Este es el que dispara el diálogo
+                        onClick = onDeleteClick,
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onError
@@ -218,8 +221,8 @@ fun DeleteConfirmationDialog(
         },
         modifier = modifier,
         properties = DialogProperties(
-            dismissOnBackPress = true, // Permite cerrar con el botón de atrás
-            dismissOnClickOutside = true // Permite cerrar haciendo clic fuera del diálogo
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true
         )
     )
 }

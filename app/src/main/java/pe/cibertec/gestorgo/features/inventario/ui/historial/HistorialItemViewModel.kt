@@ -4,8 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest // Importante: USAR collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pe.cibertec.gestorgo.features.inventario.domain.model.HistorialItem
@@ -13,45 +17,81 @@ import pe.cibertec.gestorgo.features.inventario.domain.repository.DetalleItemsRe
 import pe.cibertec.gestorgo.features.inventario.domain.repository.ItemsRepository
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class) // Anotación para usar debounce
 @HiltViewModel
-class HistorialItemViewModel @Inject constructor(private val detalleItemsRepository: DetalleItemsRepository,
-                                                 private val itemsRepository: ItemsRepository): ViewModel() {
+class HistorialItemViewModel @Inject constructor(
+    private val detalleItemsRepository: DetalleItemsRepository,
+    private val itemsRepository: ItemsRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HistorialItemUIState())
     val uiState = _uiState.asStateFlow()
 
-    private fun listarDetalleItems(){
+    private val _allHistorialItems = MutableStateFlow<List<HistorialItem>>(emptyList())
+    private val _searchText = MutableStateFlow("")
+    val searchText = _searchText.asStateFlow()
+
+    init {
+        // Al iniciar el ViewModel, comenzamos a recolectar los detalles del repositorio
+        // y también combinamos el texto de búsqueda con la lista completa.
+        listarDetalleItems() // Este método ahora recolecta del Flow caliente compartido
+        setupSearchFiltering()
+    }
+
+    private fun listarDetalleItems() {
         viewModelScope.launch {
-            val items = itemsRepository.obtenerItemsConDetalles()
-            Log.d("HistorialItemViewModel", "Items: $items")
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            try {
+                // *** CAMBIO CLAVE AQUÍ: No pasas el scope, y el Flow ya está "caliente" ***
+                itemsRepository.obtenerItemsConDetalles().collectLatest { itemsFromRepo ->
+                    Log.d("HistorialItemViewModel", "Items recibidos del Flow: $itemsFromRepo")
 
-            // Aquí cambiamos la lógica de mapeo
-            val historialItems = mutableListOf<HistorialItem>()
-            items.forEach { itemApiModel ->
-                itemApiModel.detalleItemApiModels?.forEach { detalle ->
-                    println( "Detalle ID: ${detalle.id}, Item ID (parent): ${detalle.itemId}") // Para depuración
-
-                    historialItems.add(
-                        HistorialItem(
-                            id = detalle.id, // <-- ¡CORREGIDO! Asigna el ID ÚNICO del detalle_item
-                            imagenUrl = itemApiModel.imagenUrl ?: "",
-                            nombre = itemApiModel.nombre,
-                            fecha = detalle.fecha ?: "",
-                            cantidad = detalle.cantidad,
-                            parentItemId = detalle.itemId // <-- Este es el ID del Item principal asociado al detalle
-                        )
-                    )
+                    val historialItems = mutableListOf<HistorialItem>()
+                    itemsFromRepo.forEach { itemApiModel ->
+                        itemApiModel.detalleItemApiModels?.forEach { detalle ->
+                            historialItems.add(
+                                HistorialItem(
+                                    id = detalle.id,
+                                    imagenUrl = itemApiModel.imagenUrl ?: "",
+                                    nombre = itemApiModel.nombre,
+                                    fecha = detalle.fecha ?: "",
+                                    cantidad = detalle.cantidad,
+                                    parentItemId = detalle.itemId
+                                )
+                            )
+                        }
+                    }
+                    _allHistorialItems.value = historialItems
+                    _uiState.update { it.copy(listaItems = historialItems, isLoading = false) }
                 }
+            } catch (e: Exception) {
+                Log.e("HistorialItemViewModel", "Error al cargar ítems: ${e.message}", e)
+                _uiState.update { it.copy(isLoading = false, errorMessage = "Error al cargar ítems: ${e.message}") }
             }
-
-            // Si necesitas ordenar por fecha, puedes hacerlo aquí
-            // historialItems.sortByDescending { it.fecha } // Esto requerirá que 'fecha' sea un tipo comparable (ej. LocalDateTime)
-
-            _uiState.value = _uiState.value.copy(listaItems = historialItems)
         }
     }
-    init {
-        listarDetalleItems()
+
+    private fun setupSearchFiltering() {
+        viewModelScope.launch {
+            combine(_allHistorialItems, _searchText.debounce(300L)) { allItems, query ->
+                if (query.isBlank()) {
+                    allItems
+                } else {
+                    allItems.filter { historialItem ->
+                        historialItem.nombre.contains(query, ignoreCase = true) ||
+                                historialItem.fecha.contains(query, ignoreCase = true) ||
+                                historialItem.cantidad.toString().contains(query)
+                    }
+                }
+            }.collectLatest { filteredList ->
+                _uiState.update { it.copy(listaItemsFiltrada = filteredList) }
+            }
+        }
+    }
+
+    fun actualizarTextoBusqueda(newText: String) {
+        _searchText.value = newText
+        _uiState.update { it.copy(textoBusqueda = newText) }
     }
 
     fun showDeleteConfirmationDialog(historialItemId: Int, parentItemId: Int, quantity: Int) {
@@ -94,14 +134,9 @@ class HistorialItemViewModel @Inject constructor(private val detalleItemsReposit
             }
 
             try {
-                // 1. Obtener el ítem principal actual para calcular la nueva cantidad
-                val currentItem =
-                    itemsRepository.obtenerItem(parentItemId)
-                println( "Item principal actual: $currentItem")
+                val currentItem = itemsRepository.obtenerItemPorId(parentItemId)
+                Log.d("HistorialItemViewModel", "Item principal actual: $currentItem")
 
-                // 2. Calcular la nueva cantidad del ítem principal
-                // Si el detalle fue un ingreso (+cantidad), al eliminarlo restamos.
-                // Si el detalle fue una salida (-cantidad), al eliminarlo sumamos (restar un negativo es sumar).
                 val nuevaCantidadItem = (currentItem.cantidad ?: 0) - detalleQuantity
                 Log.d(
                     "HistorialItemViewModel",
@@ -110,23 +145,22 @@ class HistorialItemViewModel @Inject constructor(private val detalleItemsReposit
                 Log.d("HistorialItemViewModel", "Cantidad del detalle a eliminar: $detalleQuantity")
                 Log.d("HistorialItemViewModel", "Nueva cantidad calculada: $nuevaCantidadItem")
 
-
-                // 3. Actualizar la cantidad del ítem principal
                 val itemToUpdate = currentItem.copy(cantidad = nuevaCantidadItem)
 
                 itemsRepository.actualizarItem(itemToUpdate)
                 Log.d("HistorialItemViewModel", "Item principal actualizado: $itemToUpdate")
 
-                // 4. Eliminar el registro de detalle
                 detalleItemsRepository.eliminarDetalleItem(historialItemId)
                 Log.d(
                     "HistorialItemViewModel",
                     "Detalle de historial eliminado: ID $historialItemId"
                 )
 
-                // 5. Refrescar la lista de historial
-                listarDetalleItems()
-                dismissDeleteConfirmationDialog() // Cerrar el diálogo al finalizar
+                // *** CAMBIO CLAVE AQUÍ: ELIMINA esta llamada a listarDetalleItems() ***
+                // La lista se actualizará AUTOMÁTICAMENTE a través del Flow que estás recolectando.
+                // listarDetalleItems() // <--- ¡ELIMINAR ESTA LÍNEA!
+
+                dismissDeleteConfirmationDialog()
 
             } catch (e: Exception) {
                 Log.e("HistorialItemViewModel", "Error al eliminar historial: ${e.message}", e)
@@ -138,7 +172,5 @@ class HistorialItemViewModel @Inject constructor(private val detalleItemsReposit
                 }
             }
         }
-
     }
-
 }

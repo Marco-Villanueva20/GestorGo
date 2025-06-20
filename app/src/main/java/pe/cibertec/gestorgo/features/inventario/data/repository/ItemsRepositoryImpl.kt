@@ -1,6 +1,7 @@
 package pe.cibertec.gestorgo.features.inventario.data.repository
 
 import io.github.jan.supabase.postgrest.result.PostgrestResult
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
 import pe.cibertec.gestorgo.features.inventario.data.remote.ItemRemoteDataSource
@@ -11,8 +12,8 @@ class ItemsRepositoryImpl @Inject constructor(private val itemsRemoteDataSource:
     ItemsRepository {
 
 
-    override suspend fun getItems(): Flow<List<ItemApiModel>> {
-        return itemsRemoteDataSource.getItems()
+    override suspend fun obtenerItems(): Flow<List<ItemApiModel>> {
+        return itemsRemoteDataSource.obtenerItems()
     }
 
     override suspend fun crearItem(itemApiModel: ItemApiModel): ItemApiModel {
@@ -27,19 +28,19 @@ class ItemsRepositoryImpl @Inject constructor(private val itemsRemoteDataSource:
         return itemsRemoteDataSource.eliminarItem(id)
     }
 
+    override suspend fun obtenerItemConDetallesPorId(id: Int): ItemApiModel {
+        return itemsRemoteDataSource.obtenerItemConDetallesPorId(id)
+    }
+
+    override suspend fun obtenerItemsConDetalles(): Flow<List<ItemApiModel>>  {
+        return itemsRemoteDataSource.obtenerItemsConDetalles()
+    }
+
     override suspend fun obtenerItemPorId(id: Int): ItemApiModel {
-        return itemsRemoteDataSource.getItemWithDetails(id)
-    }
-
-    override suspend fun obtenerItemsConDetalles(): List<ItemApiModel> {
-        return itemsRemoteDataSource.getItemsWithDetails()
-    }
-
-    override suspend fun obtenerItem(id: Int): ItemApiModel {
-        return itemsRemoteDataSource.getItem(id)
+        return itemsRemoteDataSource.obtenerItemPorId(id)
     }
 
     override suspend fun createInBucketItem(name: String, data: ByteArray): String {
-        return itemsRemoteDataSource.createInBucketItem(name, data)
+        return itemsRemoteDataSource.crearEnBucketItem(name, data)
     }
 }

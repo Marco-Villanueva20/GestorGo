@@ -1,5 +1,6 @@
 package pe.cibertec.gestorgo.features.inventario.ui.historial
 
+
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,38 +47,36 @@ import pe.cibertec.gestorgo.features.inventario.domain.model.HistorialItem
 fun HistorialScreen(
     viewModel: HistorialItemViewModel = hiltViewModel(),
 ) {
-    val uiState = viewModel.uiState.collectAsState().value // Usa .value para acceder directamente al estado
+    val uiState = viewModel.uiState.collectAsState().value
 
-Column {
-    BarraBusquedaHistorial(
-        texto = "",//uiState.textoBusqueda,
-        onTextoCambio ={}, //{ viewModel.actualizarTextoBusqueda(it) },
-        modifier = Modifier.fillMaxWidth()
-    )
-    LazyColumn {
-        items(uiState.listaItems) { item ->
-            TarjetaHistorial(
-                historialItem = item,
-                alEliminarConfirmacion = {
-                    // Pasamos el ID del detalle (item.id), el ID del item principal (item.parentItemId) y la cantidad del detalle
-                    item.id?.let { detalleId -> // `item.id` es ahora el ID del DetalleItem (correctamente)
-                        item.parentItemId?.let { parentItemId -> // `item.parentItemId` es el ID del Item principal
-                            viewModel.showDeleteConfirmationDialog(
-                                detalleId,
-                                parentItemId,
-                                item.cantidad
+    Column {
+        BarraBusquedaHistorial(
+            texto = uiState.textoBusqueda, // <-- Conecta con el texto de búsqueda del UIState
+            onTextoCambio = { viewModel.actualizarTextoBusqueda(it) }, // <-- Llama a la función del ViewModel
+            modifier = Modifier.fillMaxWidth()
+        )
+        LazyColumn {
+            items(uiState.listaItemsFiltrada) { item -> // <-- Usa la lista filtrada
+                TarjetaHistorial(
+                    historialItem = item,
+                    alEliminarConfirmacion = {
+                        item.id?.let { detalleId ->
+                            item.parentItemId?.let { parentItemId ->
+                                viewModel.showDeleteConfirmationDialog(
+                                    detalleId,
+                                    parentItemId,
+                                    item.cantidad
+                                )
+                            } ?: Log.e(
+                                "HistorialScreen",
+                                "Error: parentItemId del historial es nulo para eliminar."
                             )
-                        } ?: Log.e(
-                            "HistorialScreen",
-                            "Error: parentItemId del historial es nulo para eliminar."
-                        )
-                    } ?: Log.e("HistorialScreen", "Error: HistorialId es nulo para eliminar.")
-                }
-            )
+                        } ?: Log.e("HistorialScreen", "Error: HistorialId es nulo para eliminar.")
+                    }
+                )
+            }
         }
-
     }
-}
 
     // --- Diálogo de Confirmación ---
     if (uiState.showConfirmDialog) {
@@ -107,7 +106,6 @@ Column {
             modifier = Modifier.padding(16.dp)
         )
     }
-
 }
 
 
@@ -163,7 +161,7 @@ fun TarjetaHistorial(
 
             // Fecha y hora
             Text(
-                text = "Fecha: ${historialItem.fecha}", // Etiqueta "Fecha:"
+                text = "Fecha: ${Fecha.formatearFecha(historialItem.fecha)}", // Etiqueta "Fecha:"
                 fontSize = 13.sp,
                 color = Color.Gray
             )
