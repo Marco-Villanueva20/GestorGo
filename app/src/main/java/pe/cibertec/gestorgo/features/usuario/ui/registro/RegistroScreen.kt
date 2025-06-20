@@ -147,7 +147,6 @@ fun RegistroScreen(
         }
         OutlinedButton(
             onClick = { onReturnLogin() },
-            enabled = isFormValid && !isLoading,
             modifier = Modifier.fillMaxWidth()
         ) {
                 Text("Cancelar")
