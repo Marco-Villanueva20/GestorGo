@@ -39,6 +39,7 @@ class RegistroViewModel @Inject constructor(private val repository: UsuariosRepo
                 e.printStackTrace()
             } finally {
                 _isLoading.value = false
+                _uiState.value = _uiState.value.copy(registerSuccess = true)
             }
         }
     }

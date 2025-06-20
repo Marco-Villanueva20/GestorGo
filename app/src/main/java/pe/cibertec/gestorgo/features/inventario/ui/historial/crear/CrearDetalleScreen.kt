@@ -161,20 +161,6 @@ fun CrearDetalleScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 shape = RoundedCornerShape(12.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Campo de Fecha (Solo visual, no editable)
-            OutlinedTextField(
-                value = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
-                onValueChange = { /* No editable */ },
-                label = { Text("Fecha y Hora") },
-                readOnly = true,
-                trailingIcon = {
-                    Icon(Icons.Default.CalendarToday, contentDescription = "Fecha")
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
-            )
             Spacer(modifier = Modifier.height(32.dp))
 
             // Mensaje de error

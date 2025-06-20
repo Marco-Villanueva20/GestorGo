@@ -6,61 +6,88 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.result.PostgrestResult
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.postgresListDataFlow
 import io.github.jan.supabase.realtime.selectAsFlow
 import io.github.jan.supabase.storage.storage
 import io.ktor.http.ContentType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
 import pe.cibertec.gestorgo.features.inventario.domain.service.ItemService
 import javax.inject.Inject
 
-class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClient): ItemService {
+class ItemRemoteDataSource @Inject constructor(
+    private val client: SupabaseClient,
+) : ItemService {
     private val bucket = client.storage.from("items")
 
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val _itemsFlow = MutableStateFlow<List<ItemApiModel>>(emptyList())
+    private var isInitialized = false
+    private val channel = client.channel("public:items:id")
 
     private val columns = Columns.raw(
         """
-    id, 
-    nombre, 
-    descripcion, 
-    cantidad,
-    imagen_url,
-    detalle_items (
         id, 
-        cantidad, 
-        fecha, 
-        item_id
+        nombre, 
+        descripcion, 
+        cantidad,
+        imagen_url,
+        detalle_items (
+            id, 
+            cantidad, 
+            fecha, 
+            item_id
+        )
+        """.trimIndent()
     )
-    """.trimIndent()
-    )
 
+    private suspend fun initializeListener() {
+        if (!isInitialized) {
+            isInitialized = true
 
-    override suspend fun getItemsWithDetails(): List<ItemApiModel> {
-        val listaCompleta = client.from("items")
-            .select(columns = columns)
-            .decodeList<ItemApiModel>()
+            // Suscripción al flujo de cambios en la tabla "items"
+            channel.postgresListDataFlow(
+                schema = "public",
+                table = "items",
+                primaryKey = ItemApiModel::id
+            ).onEach {
+                val lista = client.from("items")
+                    .select(columns = columns)
+                    .decodeList<ItemApiModel>()
+                _itemsFlow.value = lista
+            }.launchIn(scope)
 
-        println("Lista completa: $listaCompleta")
-        return listaCompleta
+            // Esto es suspend y necesita estar dentro del launch
+            channel.subscribe()
+        }
     }
 
-    override suspend fun getItemWithDetails(id: Int): ItemApiModel {
-        return client.from("items").select(columns = columns){
-            filter{
+
+    override suspend fun obtenerItemConDetallesPorId(id: Int): ItemApiModel {
+        return client.from("items").select(columns = columns) {
+            filter {
                 eq("id", id)
             }
         }.decodeSingle<ItemApiModel>()
     }
 
+    override suspend fun obtenerItemsConDetalles(): Flow<List<ItemApiModel>> {
+        if (!isInitialized) {
+            initializeListener() // Esto es suspend, así que está OK
+            isInitialized = true
+        }
+        return _itemsFlow
 
-    @OptIn(SupabaseExperimental::class)
-    override suspend fun getItems(): Flow<List<ItemApiModel>> {
-        return client
-            .from("items")
-            .selectAsFlow(primaryKey = ItemApiModel::id)
     }
 
-    override suspend fun getItem(id: Int): ItemApiModel {
+    override suspend fun obtenerItemPorId(id: Int): ItemApiModel {
         return client.from("items").select {
             filter {
                 eq("id", id)
@@ -68,10 +95,17 @@ class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClien
         }.decodeSingle<ItemApiModel>()
     }
 
-    override suspend fun crearItem(itemApiModel: ItemApiModel):ItemApiModel {
+    @OptIn(SupabaseExperimental::class)
+    override suspend fun obtenerItems(): Flow<List<ItemApiModel>> {
+        return client
+            .from("items")
+            .selectAsFlow(primaryKey = ItemApiModel::id)
+    }
+
+    override suspend fun crearItem(itemApiModel: ItemApiModel): ItemApiModel {
         val idUsuario = client.auth.currentUserOrNull()
         itemApiModel.usuarioId = idUsuario?.id
-        return client.from("items").insert(itemApiModel){
+        return client.from("items").insert(itemApiModel) {
             select()
         }.decodeSingle<ItemApiModel>()
     }
@@ -97,7 +131,7 @@ class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClien
         }
     }
 
-    override suspend fun createInBucketItem(fileName: String, data: ByteArray): String {
+    override suspend fun crearEnBucketItem(fileName: String, data: ByteArray): String {
         val safeName = if (fileName.endsWith(".png")) fileName else "$fileName.png"
         try {
             bucket.upload(path = safeName, data = data)
@@ -106,13 +140,11 @@ class ItemRemoteDataSource @Inject constructor(private val client: SupabaseClien
                 contentType = ContentType.Image.PNG
             }
             return bucket.publicUrl(safeName)
-        } catch (e: IllegalArgumentException){
+        } catch (e: IllegalArgumentException) {
             throw Exception("No se seleccionó ningún archivo: ${e.message}")
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             throw Exception("No se pudo subir el archivo: ${e.message}")
         }
     }
-
 
 }

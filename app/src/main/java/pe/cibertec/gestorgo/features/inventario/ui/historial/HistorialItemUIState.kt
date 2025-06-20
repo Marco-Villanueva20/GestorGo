@@ -9,5 +9,7 @@ data class HistorialItemUIState(
     val itemToDeleteId: Int? = null, // ID del historial a eliminar
     val itemToDeleteParentItemId: Int? = null, // ID del item principal asociado al historial
     val itemToDeleteQuantity: Int? = null, // Cantidad del detalle a eliminar
-    val listaItems: List<HistorialItem> = emptyList(),
+    val listaItems: List<HistorialItem> = emptyList(), // La lista completa original
+    val textoBusqueda: String = "", // <-- NUEVO: Texto de búsqueda
+    val listaItemsFiltrada: List<HistorialItem> = emptyList() // <-- NUEVO: Lista filtrada para la UI
 )

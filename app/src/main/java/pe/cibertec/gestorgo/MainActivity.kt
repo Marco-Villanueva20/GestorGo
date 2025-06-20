@@ -31,13 +31,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             GestorGoTheme {
                 // 🔐 Ya es seguro acceder al supabaseClient
-                val usuarioInfo = supabaseClient.auth.currentUserOrNull()
 
-                val nombre = usuarioInfo?.identities?.firstOrNull()
-                    ?.identityData?.get("nombres")?.jsonPrimitive?.content.orEmpty()
                 NavigationScreen(
-                    nombre = nombre,
-                    usuarioInfo = usuarioInfo
+                    supabaseClient = supabaseClient
                 )
             }
         }

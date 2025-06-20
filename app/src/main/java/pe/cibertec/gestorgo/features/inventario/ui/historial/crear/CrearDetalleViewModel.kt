@@ -7,13 +7,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pe.cibertec.gestorgo.features.inventario.data.model.DetalleItemApiModel
 import pe.cibertec.gestorgo.features.inventario.data.model.ItemApiModel
 import pe.cibertec.gestorgo.features.inventario.domain.model.Item
 import pe.cibertec.gestorgo.features.inventario.domain.repository.DetalleItemsRepository
-import pe.cibertec.gestorgo.features.inventario.domain.repository.ItemsRepository // Importa el repositorio de Items
+import pe.cibertec.gestorgo.features.inventario.domain.repository.ItemsRepository
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,19 +27,21 @@ class CrearDetalleViewModel @Inject constructor(
     val uiState: StateFlow<DetalleMovimientoUIState> = _uiState.asStateFlow()
 
     init {
-        cargarItemsDisponibles()
+        cargarItemsDisponibles() // Esto iniciará la recolección del Flow de ítems
     }
 
-    // En CrearDetalleViewModel.kt
     private fun cargarItemsDisponibles() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                val itemApiList = itemsRepository.obtenerItemsConDetalles() // O la función que uses
-                val items = itemApiList.map { it.toItemDomain() }
-                _uiState.update { it.copy(listaItems = items, isLoading = false) }
-
+                // *** CAMBIO CLAVE AQUÍ: No pasas el scope, y el Flow ya está "caliente" ***
+                itemsRepository.obtenerItemsConDetalles()
+                    .collectLatest { apiItemList -> // Usa collectLatest
+                        val listaItem : List<Item> = apiItemList.map { it.toItemDomain() }
+                        _uiState.update { it.copy(listaItems = listaItem, isLoading = false) }
+                    }
             } catch (e: Exception) {
+                Log.e("CrearDetalleViewModel", "Error al cargar ítems: ${e.message}", e)
                 _uiState.update { it.copy(isLoading = false, errorMessage = "Error al cargar ítems: ${e.message}") }
             }
         }
@@ -48,7 +51,6 @@ class CrearDetalleViewModel @Inject constructor(
     }
 
     fun onCantidadChange(cantidad: String) {
-        // Solo permite números
         _uiState.update { it.copy(cantidad = cantidad.filter { char -> char.isDigit() }) }
     }
 
@@ -77,11 +79,13 @@ class CrearDetalleViewModel @Inject constructor(
             }
 
             try {
-                // Primero, actualizar la cantidad del ítem en la tabla 'items'
+                // Obtener el item por ID para la actualización, NO es un Flow.
+                val currentItem = itemsRepository.obtenerItemPorId(selectedItem.id!!)
+
                 val nuevaCantidadItem = if (_uiState.value.tipoMovimiento == "Ingreso") {
-                    (selectedItem.cantidad ?: 0) + cantidad
+                    (currentItem.cantidad ?: 0) + cantidad
                 } else {
-                    val stockActual = selectedItem.cantidad ?: 0
+                    val stockActual = currentItem.cantidad ?: 0
                     if (cantidad > stockActual) {
                         _uiState.update { it.copy(errorMessage = "La cantidad de salida excede el stock disponible.", isLoading = false) }
                         return@launch
@@ -89,39 +93,28 @@ class CrearDetalleViewModel @Inject constructor(
                     stockActual - cantidad
                 }
 
-                // Crear un ItemApiModel para actualizar el ítem
-                val itemToUpdate = ItemApiModel(
-                    id = selectedItem.id,
-                    nombre = selectedItem.nombre,
-                    descripcion = selectedItem.descripcion,
-                    imagenUrl = selectedItem.imagenUrl,
-                    cantidad = nuevaCantidadItem,
-                    usuarioId = selectedItem.usuarioId
-                )
+                val itemToUpdate = currentItem.copy(cantidad = nuevaCantidadItem)
                 itemsRepository.actualizarItem(itemToUpdate)
                 Log.d("CrearDetalleViewModel", "Item actualizado: $itemToUpdate")
 
-                // Luego, registrar el detalle del movimiento en la tabla 'detalle_items'
                 val detalleItemApiModel = DetalleItemApiModel(
                     cantidad = if (_uiState.value.tipoMovimiento == "Ingreso") cantidad else -cantidad,
-                    itemId = selectedItem.id!!
+                    itemId = selectedItem.id
                 )
-                detalleItemsRepository.crearDetalleItem(detalleItemApiModel) // <-- Aquí es donde probablemente falla
-                Log.d("CrearDetalleViewModel", "Detalle de movimiento creado: $detalleItemApiModel") // <-- Esta línea no se ejecuta
+                detalleItemsRepository.crearDetalleItem(detalleItemApiModel)
+                Log.d("CrearDetalleViewModel", "Detalle de movimiento creado: $detalleItemApiModel")
 
                 _uiState.update { it.copy(isLoading = false) }
                 Log.d("CrearDetalleViewModel", "Movimiento registrado exitosamente.")
                 onSuccess()
                 Log.d("CrearDetalleViewModel", "Callback de éxito llamado.")
             } catch (e: Exception) {
-                // ¡MUY IMPORTANTE! Loguea la excepción completa para diagnosticar.
                 Log.e("CrearDetalleViewModel", "Error al registrar movimiento: ${e.message}", e)
                 _uiState.update { it.copy(isLoading = false, errorMessage = "Error al registrar movimiento: ${e.message}") }
             }
         }
     }
 
-    // Función de mapeo de ItemApiModel a tu modelo de dominio Item
     private fun ItemApiModel.toItemDomain(): Item {
         return Item(
             id = this.id,
@@ -133,6 +126,4 @@ class CrearDetalleViewModel @Inject constructor(
         )
     }
 
-    // Asume que tienes un modelo Item en pe.cibertec.gestorgo.features.inventario.domain.model
-    // data class Item(...)
 }
