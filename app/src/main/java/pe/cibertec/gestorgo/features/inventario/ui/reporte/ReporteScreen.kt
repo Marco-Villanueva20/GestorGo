@@ -67,8 +67,8 @@ fun ReporteScreen(
     val bars = listaItems.map {
         Bar(
             label = it.nombre,
-            value = it.cantidad?.toFloat() ?: 0f,
-            color = MaterialTheme.colorScheme.primary
+            value = (it.cantidad ?: 0).toFloat().toInt().toFloat(),
+            color = MaterialTheme.colorScheme.primaryContainer
         )
     }
 
@@ -115,7 +115,7 @@ fun ReporteScreen(
                 }
             }
         ) {
-            Text("Exportar CSV 📥", style = MaterialTheme.typography.bodySmall)
+            Text("Exportar en Excel 📥", style = MaterialTheme.typography.bodySmall)
         }
     }
 }
@@ -133,7 +133,8 @@ fun InventoryBarChart(barChartData: BarChartData) {
         BarChart(
             barChartData = barChartData,
             modifier = Modifier
-                .width(totalWidth)
+                .width(totalWidth + 40.dp) // añade espacio a izquierda/derecha
+                .padding(start = 20.dp, end = 20.dp)
                 .height(400.dp),
             animation = simpleChartAnimation(),
             barDrawer = SimpleBarDrawer(),
