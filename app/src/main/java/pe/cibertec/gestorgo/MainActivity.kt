@@ -7,8 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.auth.auth
-import kotlinx.serialization.json.jsonPrimitive
 import pe.cibertec.gestorgo.navigation.NavigationScreen
 import pe.cibertec.gestorgo.ui.theme.GestorGoTheme
 import javax.inject.Inject
